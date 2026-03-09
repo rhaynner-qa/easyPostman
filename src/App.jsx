@@ -11,6 +11,122 @@ const createId = () => {
   return `${Date.now()}-${Math.random().toString(16).slice(2)}`;
 };
 
+const escapeHtml = (value) =>
+  String(value ?? "")
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
+
+const buildReportHtml = (runs) => {
+  const total = runs.length;
+  const passes = runs.reduce(
+    (count, run) => count + run.tests.filter((test) => test.status === "pass").length,
+    0,
+  );
+  const failures = runs.reduce(
+    (count, run) => count + run.tests.filter((test) => test.status === "fail").length,
+    0,
+  );
+  const duration = runs.reduce((sum, run) => sum + (run.duration ?? 0), 0);
+
+  const itemsHtml = runs
+    .map((run) => {
+      const testsHtml = run.tests.length
+        ? run.tests
+            .map(
+              (test) => `
+              <div class="test-row ${test.status}">
+                <span>${escapeHtml(test.status)}</span>
+                <span>${escapeHtml(test.name)}</span>
+                ${
+                  test.error
+                    ? `<span class="test-error">${escapeHtml(test.error)}</span>`
+                    : ""
+                }
+              </div>
+            `,
+            )
+            .join("")
+        : `<div class="test-row muted">Sem testes</div>`;
+
+      return `
+        <section class="run-card">
+          <div class="run-header">
+            <div>
+              <div class="run-name">${escapeHtml(run.name)}</div>
+              <div class="run-url">${escapeHtml(run.method)} ${escapeHtml(
+        run.url,
+      )}</div>
+            </div>
+            <div class="run-meta">
+              <span>Status ${escapeHtml(run.status)}</span>
+              <span>${escapeHtml(run.duration)} ms</span>
+              <span>${escapeHtml(run.size)} bytes</span>
+            </div>
+          </div>
+          <div class="tests-block">
+            <div class="tests-title">Tests</div>
+            ${testsHtml}
+          </div>
+        </section>
+      `;
+    })
+    .join("");
+
+  return `<!doctype html>
+<html lang="pt-br">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>easyPostman Report</title>
+    <style>
+      :root { font-family: "IBM Plex Sans", "Segoe UI", sans-serif; color: #1a1f2b; }
+      body { margin: 0; background: #f3f5f9; }
+      .page { max-width: 960px; margin: 0 auto; padding: 32px 20px 40px; }
+      .header { display: flex; justify-content: space-between; align-items: center; }
+      .title { font-size: 22px; font-weight: 700; }
+      .subtitle { color: #667085; font-size: 12px; }
+      .summary { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin: 20px 0; }
+      .summary-card { background: #fff; border-radius: 12px; padding: 14px; border: 1px solid #e2e8f0; }
+      .summary-card span { display: block; font-size: 12px; color: #667085; }
+      .summary-card strong { font-size: 18px; }
+      .run-card { background: #fff; border-radius: 16px; padding: 16px; border: 1px solid #e2e8f0; margin-bottom: 16px; }
+      .run-header { display: flex; justify-content: space-between; gap: 12px; }
+      .run-name { font-weight: 600; font-size: 16px; }
+      .run-url { font-size: 12px; color: #667085; margin-top: 4px; }
+      .run-meta { display: flex; gap: 12px; font-size: 12px; color: #475467; }
+      .tests-block { margin-top: 14px; }
+      .tests-title { font-size: 12px; text-transform: uppercase; letter-spacing: 0.05em; color: #667085; margin-bottom: 8px; }
+      .test-row { display: grid; grid-template-columns: 70px 1fr; gap: 8px; font-size: 12px; margin-bottom: 6px; }
+      .test-row.pass span:first-child { color: #15803d; font-weight: 600; }
+      .test-row.fail span:first-child { color: #b42318; font-weight: 600; }
+      .test-row.muted { color: #98a2b3; }
+      .test-error { grid-column: span 2; color: #b42318; }
+      @media (max-width: 720px) { .summary { grid-template-columns: repeat(2, 1fr); } }
+    </style>
+  </head>
+  <body>
+    <div class="page">
+      <div class="header">
+        <div>
+          <div class="title">easyPostman Report</div>
+          <div class="subtitle">Gerado em ${new Date().toISOString()}</div>
+        </div>
+      </div>
+      <div class="summary">
+        <div class="summary-card"><span>Requisicoes</span><strong>${total}</strong></div>
+        <div class="summary-card"><span>Passes</span><strong>${passes}</strong></div>
+        <div class="summary-card"><span>Failures</span><strong>${failures}</strong></div>
+        <div class="summary-card"><span>Duracao</span><strong>${duration} ms</strong></div>
+      </div>
+      ${itemsHtml}
+    </div>
+  </body>
+</html>`;
+};
+
 const resolveVariables = (text, variables) => {
   if (!text) return "";
   return text.replace(/\{\{([^}]+)\}\}/g, (_, key) => {
@@ -244,6 +360,7 @@ function App() {
   const [scriptTab, setScriptTab] = useState("Pre");
   const [response, setResponse] = useState(null);
   const [testResults, setTestResults] = useState([]);
+  const [runs, setRuns] = useState([]);
   const [isSending, setIsSending] = useState(false);
   const [importError, setImportError] = useState("");
 
@@ -348,6 +465,29 @@ function App() {
     );
   };
 
+  const recordRun = (payload) => {
+    setRuns((current) => [
+      ...current,
+      {
+        id: createId(),
+        timestamp: new Date().toISOString(),
+        ...payload,
+      },
+    ]);
+  };
+
+  const downloadReport = () => {
+    if (!runs.length) return;
+    const html = buildReportHtml(runs);
+    const blob = new Blob([html], { type: "text/html" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `easy-postman-report-${Date.now()}.html`;
+    link.click();
+    URL.revokeObjectURL(url);
+  };
+
   const runScript = (script, context) => {
     if (!script?.trim()) return { tests: [], error: "" };
     const { pm, tests, mutableEnv } = createPmRunner(context);
@@ -432,15 +572,36 @@ function App() {
       if (testRun.envValues) {
         commitEnvValues(testRun.envValues);
       }
-      setTestResults(testRun.tests ?? []);
+      const tests = testRun.tests ?? [];
+      setTestResults(tests);
+      recordRun({
+        name: requestDraft.name,
+        method: requestDraft.method,
+        url: resolvedUrl,
+        status: result.status,
+        duration,
+        size: bodySize,
+        tests,
+      });
     } catch (error) {
+      const errorMessage = error?.message ?? "Falha ao enviar requisicao.";
       setResponse({
         status: 0,
         status_text: "Erro",
         headers: [],
-        body: error?.message ?? "Falha ao enviar requisicao.",
+        body: errorMessage,
         duration: 0,
         size: 0,
+      });
+      recordRun({
+        name: requestDraft.name,
+        method: requestDraft.method,
+        url: resolvedUrl,
+        status: 0,
+        duration: 0,
+        size: 0,
+        tests: [],
+        error: errorMessage,
       });
     } finally {
       setIsSending(false);
@@ -762,6 +923,14 @@ function App() {
             <div className="response-header">
               <div className="response-title">Resposta</div>
               <div className="response-meta">
+                <button
+                  type="button"
+                  className="report-button"
+                  onClick={downloadReport}
+                  disabled={!runs.length}
+                >
+                  Gerar Report
+                </button>
                 {response ? (
                   <>
                     <span>Status {response.status}</span>

@@ -438,6 +438,20 @@ textarea {
   color: #5b667a;
 }
 
+.report-button {
+  border: 1px solid #d0d6e0;
+  background: #fff;
+  padding: 6px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.report-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
 .response-body {
   background: #f7f9fc;
   border-radius: 12px;
