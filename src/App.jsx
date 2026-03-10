@@ -50,6 +50,16 @@ const normalizeRows = (rows) => {
 const ensureAtLeastOneRow = (rows) =>
   rows.length ? rows : [createKeyValueRow()];
 
+const createEmptyDraft = () => ({
+  name: "Nova requisicao",
+  method: "GET",
+  url: "",
+  params: [createKeyValueRow()],
+  headers: [createKeyValueRow()],
+  body: "",
+  scripts: { pre: "", tests: "" },
+});
+
 const buildBulkText = (rows) =>
   rows
     .filter((row) => row.key)
@@ -451,15 +461,7 @@ function App() {
   const [isSending, setIsSending] = useState(false);
   const [importError, setImportError] = useState("");
 
-  const [requestDraft, setRequestDraft] = useState({
-    name: "Nova requisicao",
-    method: "GET",
-    url: "",
-    params: [createKeyValueRow()],
-    headers: [createKeyValueRow()],
-    body: "",
-    scripts: { pre: "", tests: "" },
-  });
+  const [requestDraft, setRequestDraft] = useState(createEmptyDraft());
 
   const activeEnvironment = useMemo(
     () => environments.find((env) => env.id === activeEnvId),
@@ -630,6 +632,14 @@ function App() {
       body: item.request.body,
       scripts: item.scripts ?? { pre: "", tests: "" },
     });
+    setIsDirty(false);
+    setResponse(null);
+    setTestResults([]);
+  };
+
+  const createNewRequest = () => {
+    setActiveRequestId("");
+    setRequestDraft(createEmptyDraft());
     setIsDirty(false);
     setResponse(null);
     setTestResults([]);
@@ -929,6 +939,13 @@ function App() {
               hidden
             />
           </label>
+          <button
+            type="button"
+            className="import-button ghost"
+            onClick={createNewRequest}
+          >
+            Nova Request
+          </button>
           <label className="import-button ghost">
             Importar Environment
             <input
