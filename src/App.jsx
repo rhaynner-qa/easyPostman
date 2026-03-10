@@ -30,14 +30,19 @@ const normalizeRows = (rows) => {
     enabled: row?.enabled !== false,
     description: row?.description ?? "",
   }));
-  const trimmed = normalized.filter(
-    (row, index) => !isRowEmpty(row) || index === list.length - 1,
-  );
-  if (!trimmed.length || !isRowEmpty(trimmed[trimmed.length - 1])) {
-    return [...trimmed, createKeyValueRow()];
+  let trimmed = normalized;
+  while (
+    trimmed.length > 1 &&
+    isRowEmpty(trimmed[trimmed.length - 1]) &&
+    isRowEmpty(trimmed[trimmed.length - 2])
+  ) {
+    trimmed = trimmed.slice(0, -1);
   }
   return trimmed;
 };
+
+const ensureAtLeastOneRow = (rows) =>
+  rows.length ? rows : [createKeyValueRow()];
 
 const buildBulkText = (rows) =>
   rows
@@ -66,7 +71,7 @@ const parseBulkText = (text) => {
     return createKeyValueRow({ key, value });
   });
 
-  return normalizeRows(rows);
+  return ensureAtLeastOneRow(normalizeRows(rows));
 };
 
 const escapeHtml = (value) =>
@@ -238,16 +243,18 @@ const extractQueryParams = (rawUrl, urlObject) => {
 
 const normalizeHeaders = (headers) => {
   if (!Array.isArray(headers) || !headers.length) {
-    return normalizeRows([]);
+    return ensureAtLeastOneRow(normalizeRows([]));
   }
-  return normalizeRows(
-    headers.map((header) => ({
-      key: header.key ?? "",
-      value: header.value ?? "",
-      description:
-        typeof header.description === "string" ? header.description : "",
-      enabled: !header.disabled,
-    })),
+  return ensureAtLeastOneRow(
+    normalizeRows(
+      headers.map((header) => ({
+        key: header.key ?? "",
+        value: header.value ?? "",
+        description:
+          typeof header.description === "string" ? header.description : "",
+        enabled: !header.disabled,
+      })),
+    ),
   );
 };
 
@@ -259,7 +266,7 @@ const normalizeRequestFromPostman = (request) => {
   return {
     method: (request?.method ?? "GET").toUpperCase(),
     url,
-    params: normalizeRows(params),
+    params: ensureAtLeastOneRow(normalizeRows(params)),
     headers: normalizeHeaders(request?.header),
     body,
   };
@@ -458,10 +465,10 @@ function App() {
     setRequestDraft((current) => {
       const next = { ...current, ...patch };
       if (patch.params) {
-        next.params = normalizeRows(patch.params);
+        next.params = ensureAtLeastOneRow(normalizeRows(patch.params));
       }
       if (patch.headers) {
-        next.headers = normalizeRows(patch.headers);
+        next.headers = ensureAtLeastOneRow(normalizeRows(patch.headers));
       }
       return next;
     });
@@ -484,6 +491,14 @@ function App() {
         return { ...row, enabled };
       });
       return { ...current, [section]: normalizeRows(next) };
+    });
+  };
+
+  const removeRow = (section, index) => {
+    setRequestDraft((current) => {
+      const rows = current[section].filter((_, rowIndex) => rowIndex !== index);
+      const nextRows = ensureAtLeastOneRow(normalizeRows(rows));
+      return { ...current, [section]: nextRows };
     });
   };
 
@@ -593,8 +608,8 @@ function App() {
       name: item.name,
       method: item.request.method,
       url: item.request.url,
-      params: normalizeRows(item.request.params),
-      headers: normalizeRows(item.request.headers),
+      params: ensureAtLeastOneRow(normalizeRows(item.request.params)),
+      headers: ensureAtLeastOneRow(normalizeRows(item.request.headers)),
       body: item.request.body,
       scripts: item.scripts ?? { pre: "", tests: "" },
     });
@@ -1064,7 +1079,16 @@ function App() {
                         />
                       </div>
                       <div className="postman-cell bulk-cell">
-                        <span className="bulk-placeholder" />
+                        <button
+                          type="button"
+                          className="row-delete"
+                          onClick={() => removeRow("params", index)}
+                          disabled={
+                            requestDraft.params.length === 1 &&
+                            isRowEmpty(param)
+                          }
+                          aria-label="Excluir linha"
+                        />
                       </div>
                     </div>
                   ))}
@@ -1204,7 +1228,16 @@ function App() {
                         />
                       </div>
                       <div className="postman-cell bulk-cell">
-                        <span className="bulk-placeholder" />
+                        <button
+                          type="button"
+                          className="row-delete"
+                          onClick={() => removeRow("headers", index)}
+                          disabled={
+                            requestDraft.headers.length === 1 &&
+                            isRowEmpty(header)
+                          }
+                          aria-label="Excluir linha"
+                        />
                       </div>
                     </div>
                   ))}
