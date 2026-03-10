@@ -22,6 +22,9 @@ const createKeyValueRow = (overrides = {}) => ({
 const isRowEmpty = (row) =>
   !row?.key && !row?.value && !row?.description;
 
+const compactRows = (rows) =>
+  rows.filter((row) => !isRowEmpty(row));
+
 const normalizeRows = (rows) => {
   const list = Array.isArray(rows) ? rows.filter(Boolean) : [];
   const normalized = list.map((row) => ({
@@ -437,6 +440,7 @@ function App() {
   const [response, setResponse] = useState(null);
   const [testResults, setTestResults] = useState([]);
   const [runs, setRuns] = useState([]);
+  const [isDirty, setIsDirty] = useState(false);
   const [bulkEdit, setBulkEdit] = useState({
     params: { open: false, text: "" },
     headers: { open: false, text: "" },
@@ -472,30 +476,12 @@ function App() {
       }
       return next;
     });
+    setIsDirty(true);
   };
 
   const updateRequestName = (name) => {
     setRequestDraft((current) => ({ ...current, name }));
-    if (!activeRequestId) return;
-    setCollections((current) => {
-      const updateItems = (items) =>
-        items.map((item) => {
-          if (item.type === "request" && item.id === activeRequestId) {
-            return { ...item, name };
-          }
-          if (item.type === "folder") {
-            return {
-              ...item,
-              children: updateItems(item.children ?? []),
-            };
-          }
-          return item;
-        });
-      return current.map((collection) => ({
-        ...collection,
-        items: updateItems(collection.items ?? []),
-      }));
-    });
+    setIsDirty(true);
   };
 
   const updateKeyValue = (section, index, field, value) => {
@@ -506,6 +492,7 @@ function App() {
       });
       return { ...current, [section]: normalizeRows(next) };
     });
+    setIsDirty(true);
   };
 
   const updateRowEnabled = (section, index, enabled) => {
@@ -516,6 +503,7 @@ function App() {
       });
       return { ...current, [section]: normalizeRows(next) };
     });
+    setIsDirty(true);
   };
 
   const removeRow = (section, index) => {
@@ -524,6 +512,7 @@ function App() {
       const nextRows = ensureAtLeastOneRow(normalizeRows(rows));
       return { ...current, [section]: nextRows };
     });
+    setIsDirty(true);
   };
 
   const focusCell = (section, index, field) => {
@@ -580,6 +569,7 @@ function App() {
       ...current,
       [section]: { open: false, text: "" },
     }));
+    setIsDirty(true);
   };
 
   const handleImportCollection = async (event) => {
@@ -637,6 +627,7 @@ function App() {
       body: item.request.body,
       scripts: item.scripts ?? { pre: "", tests: "" },
     });
+    setIsDirty(false);
     setResponse(null);
     setTestResults([]);
   };
@@ -648,6 +639,79 @@ function App() {
         env.id === activeEnvId ? { ...env, values } : env,
       ),
     );
+  };
+
+  const buildDraftPayload = () => ({
+    name: requestDraft.name,
+    request: {
+      method: requestDraft.method,
+      url: requestDraft.url,
+      params: compactRows(normalizeRows(requestDraft.params)),
+      headers: compactRows(normalizeRows(requestDraft.headers)),
+      body: requestDraft.body,
+    },
+    scripts: requestDraft.scripts ?? { pre: "", tests: "" },
+  });
+
+  const saveRequest = () => {
+    const payload = buildDraftPayload();
+    const newRequestId = activeRequestId || createId();
+
+    setCollections((current) => {
+      const updateItems = (items) =>
+        items.map((item) => {
+          if (item.type === "request" && item.id === activeRequestId) {
+            return { ...item, ...payload };
+          }
+          if (item.type === "folder") {
+            return {
+              ...item,
+              children: updateItems(item.children ?? []),
+            };
+          }
+          return item;
+        });
+
+      if (activeRequestId) {
+        return current.map((collection) => ({
+          ...collection,
+          items: updateItems(collection.items ?? []),
+        }));
+      }
+
+      const localIndex = current.findIndex(
+        (collection) => collection.name === "Local",
+      );
+      const localCollection =
+        localIndex >= 0
+          ? current[localIndex]
+          : {
+              id: createId(),
+              name: "Local",
+              items: [],
+            };
+
+      const newItem = {
+        id: newRequestId,
+        type: "request",
+        ...payload,
+      };
+
+      const updatedLocal = {
+        ...localCollection,
+        items: [...(localCollection.items ?? []), newItem],
+      };
+
+      if (localIndex >= 0) {
+        return current.map((collection, index) =>
+          index === localIndex ? updatedLocal : collection,
+        );
+      }
+      return [updatedLocal, ...current];
+    });
+
+    setActiveRequestId(newRequestId);
+    setIsDirty(false);
   };
 
   const recordRun = (payload) => {
@@ -920,17 +984,27 @@ function App() {
                 }
                 placeholder="Nome da requisicao"
               />
+              <div className="request-actions">
+                <button
+                  type="button"
+                  className="save-button"
+                  onClick={saveRequest}
+                  disabled={!isDirty}
+                >
+                  Salvar
+                </button>
+              </div>
             </div>
 
             <div className="request-line">
               <div className="request-input-group">
-                <select
-                  className="method-select"
-                  value={requestDraft.method}
-                  onChange={(event) =>
-                    updateRequest({ method: event.target.value })
-                  }
-                >
+              <select
+                className="method-select"
+                value={requestDraft.method}
+                onChange={(event) =>
+                  updateRequest({ method: event.target.value })
+                }
+              >
                   {METHOD_OPTIONS.map((method) => (
                     <option key={method} value={method}>
                       {method}
