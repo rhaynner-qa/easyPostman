@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import { invoke } from "@tauri-apps/api/core";
 import CodeMirror from "@uiw/react-codemirror";
 import { javascript } from "@codemirror/lang-javascript";
@@ -474,6 +474,8 @@ function App() {
     params: { open: false, text: "" },
     headers: { open: false, text: "" },
   });
+  const [envKeyWidth, setEnvKeyWidth] = useState(180);
+  const envGridRef = useRef(null);
   const [isSending, setIsSending] = useState(false);
   const [importError, setImportError] = useState("");
 
@@ -878,6 +880,31 @@ function App() {
       updateEnvironmentValues(nextRows);
       return nextRows;
     });
+  };
+
+  const startEnvResize = (event) => {
+    event.preventDefault();
+    const grid = envGridRef.current;
+    if (!grid) return;
+    const rect = grid.getBoundingClientRect();
+    const startX = event.clientX;
+    const startWidth = envKeyWidth;
+    const min = 120;
+    const max = Math.max(200, rect.width - 36 - 120);
+
+    const handleMove = (moveEvent) => {
+      const delta = moveEvent.clientX - startX;
+      const next = Math.min(max, Math.max(min, startWidth + delta));
+      setEnvKeyWidth(next);
+    };
+
+    const handleUp = () => {
+      window.removeEventListener("mousemove", handleMove);
+      window.removeEventListener("mouseup", handleUp);
+    };
+
+    window.addEventListener("mousemove", handleMove);
+    window.addEventListener("mouseup", handleUp);
   };
 
   const removeRequestById = (items, id) =>
@@ -1492,11 +1519,19 @@ function App() {
             {envEditorId ? (
               <div className="env-editor">
                 <div className="table-header">Variaveis</div>
-                <div className="postman-grid">
+                <div
+                  className="postman-grid env-grid"
+                  ref={envGridRef}
+                  style={{ "--env-key-width": `${envKeyWidth}px` }}
+                >
                   <div className="table-header-row env-header">
                     <div className="postman-cell">Key</div>
                     <div className="postman-cell">Value</div>
                     <div className="postman-cell bulk-cell" />
+                    <div
+                      className="env-resizer"
+                      onMouseDown={startEnvResize}
+                    />
                   </div>
                   {envEditorRows.map((row, index) => (
                     <div key={`env-${index}`} className="postman-row env-row">

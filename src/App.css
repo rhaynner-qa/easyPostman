@@ -245,12 +245,32 @@ textarea {
   border-radius: 6px;
 }
 
+.env-grid {
+  position: relative;
+  --env-key-width: 180px;
+}
+
 .env-header {
-  grid-template-columns: 1fr 1fr 36px;
+  grid-template-columns: var(--env-key-width) 1fr 36px;
+  position: relative;
 }
 
 .env-row {
-  grid-template-columns: 1fr 1fr 36px;
+  grid-template-columns: var(--env-key-width) 1fr 36px;
+}
+
+.env-resizer {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: var(--env-key-width);
+  width: 8px;
+  transform: translateX(-4px);
+  cursor: col-resize;
+}
+
+.env-resizer:hover {
+  background: rgba(255, 255, 255, 0.06);
 }
 
 .env-panel .postman-cell {
