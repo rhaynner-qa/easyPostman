@@ -60,23 +60,6 @@ textarea {
   font-size: 11px;
 }
 
-.import-button {
-  background: #2f6fed;
-  color: #fff;
-  border: none;
-  padding: 8px 12px;
-  border-radius: 8px;
-  font-size: 12px;
-  cursor: pointer;
-  text-align: center;
-}
-
-.import-button.ghost {
-  background: #232323;
-  color: #e6e6e6;
-  border: 1px solid #2f2f2f;
-}
-
 .create-menu {
   position: relative;
   display: flex;
@@ -110,7 +93,8 @@ textarea {
   z-index: 5;
 }
 
-.create-dropdown button {
+.create-dropdown button,
+.dropdown-item {
   border: 1px solid transparent;
   background: #232323;
   color: #e6e6e6;
@@ -121,7 +105,8 @@ textarea {
   font-size: 12px;
 }
 
-.create-dropdown button:hover {
+.create-dropdown button:hover,
+.dropdown-item:hover {
   border-color: #2f2f2f;
   background: #2a2a2a;
 }

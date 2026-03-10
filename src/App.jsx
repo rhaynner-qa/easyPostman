@@ -1038,15 +1038,6 @@ function App() {
             <div className="app-name">easyPostman</div>
             <div className="app-subtitle">Colecoes locais</div>
           </div>
-          <label className="import-button">
-            Importar Collection
-            <input
-              type="file"
-              accept=".json"
-              onChange={handleImportCollection}
-              hidden
-            />
-          </label>
           <div className="create-menu">
             <button
               type="button"
@@ -1085,18 +1076,33 @@ function App() {
                 >
                   Pastas
                 </button>
+                <label className="dropdown-item">
+                  Importar Collection
+                  <input
+                    type="file"
+                    accept=".json"
+                    onChange={(event) => {
+                      handleImportCollection(event);
+                      setCreateMenuOpen(false);
+                    }}
+                    hidden
+                  />
+                </label>
+                <label className="dropdown-item">
+                  Importar Environment
+                  <input
+                    type="file"
+                    accept=".json"
+                    onChange={(event) => {
+                      handleImportEnvironment(event);
+                      setCreateMenuOpen(false);
+                    }}
+                    hidden
+                  />
+                </label>
               </div>
             ) : null}
           </div>
-          <label className="import-button ghost">
-            Importar Environment
-            <input
-              type="file"
-              accept=".json"
-              onChange={handleImportEnvironment}
-              hidden
-            />
-          </label>
         </div>
         {importError ? <div className="import-error">{importError}</div> : null}
         <div className="collection-list">
