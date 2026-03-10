@@ -77,6 +77,55 @@ textarea {
   border: 1px solid #2f2f2f;
 }
 
+.create-menu {
+  position: relative;
+  display: flex;
+  justify-content: flex-start;
+}
+
+.create-button {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  border: 1px solid #2f2f2f;
+  background: #232323;
+  color: #e6e6e6;
+  font-size: 18px;
+  cursor: pointer;
+  line-height: 1;
+}
+
+.create-dropdown {
+  position: absolute;
+  top: 38px;
+  left: 0;
+  background: #1f1f1f;
+  border: 1px solid #2f2f2f;
+  border-radius: 10px;
+  padding: 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 140px;
+  z-index: 5;
+}
+
+.create-dropdown button {
+  border: 1px solid transparent;
+  background: #232323;
+  color: #e6e6e6;
+  padding: 6px 10px;
+  border-radius: 8px;
+  text-align: left;
+  cursor: pointer;
+  font-size: 12px;
+}
+
+.create-dropdown button:hover {
+  border-color: #2f2f2f;
+  background: #2a2a2a;
+}
+
 .import-error {
   color: #f97066;
   font-size: 12px;

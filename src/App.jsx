@@ -454,6 +454,7 @@ function App() {
   const [testResults, setTestResults] = useState([]);
   const [runs, setRuns] = useState([]);
   const [isDirty, setIsDirty] = useState(false);
+  const [createMenuOpen, setCreateMenuOpen] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState({
     open: false,
     id: "",
@@ -648,6 +649,57 @@ function App() {
     setIsDirty(false);
     setResponse(null);
     setTestResults([]);
+  };
+
+  const createCollection = () => {
+    setCollections((current) => [
+      {
+        id: createId(),
+        name: "Nova Collection",
+        items: [],
+      },
+      ...current,
+    ]);
+  };
+
+  const createFolder = () => {
+    let folderId = "";
+    setCollections((current) => {
+      const next = [...current];
+      const localIndex = next.findIndex(
+        (collection) => collection.name === "Local",
+      );
+      const localCollection =
+        localIndex >= 0
+          ? next[localIndex]
+          : {
+              id: createId(),
+              name: "Local",
+              items: [],
+            };
+      folderId = createId();
+      const newFolder = {
+        id: folderId,
+        type: "folder",
+        name: "Nova Pasta",
+        children: [],
+      };
+      const updatedLocal = {
+        ...localCollection,
+        items: [...(localCollection.items ?? []), newFolder],
+      };
+      if (localIndex >= 0) {
+        next[localIndex] = updatedLocal;
+        return next;
+      }
+      return [updatedLocal, ...next];
+    });
+    if (folderId) {
+      setExpandedFolders((current) => ({
+        ...current,
+        [folderId]: true,
+      }));
+    }
   };
 
   const removeRequestById = (items, id) =>
@@ -995,13 +1047,47 @@ function App() {
               hidden
             />
           </label>
-          <button
-            type="button"
-            className="import-button ghost"
-            onClick={createNewRequest}
-          >
-            Nova Request
-          </button>
+          <div className="create-menu">
+            <button
+              type="button"
+              className="create-button"
+              onClick={() => setCreateMenuOpen((open) => !open)}
+              aria-label="Criar"
+            >
+              +
+            </button>
+            {createMenuOpen ? (
+              <div className="create-dropdown">
+                <button
+                  type="button"
+                  onClick={() => {
+                    createNewRequest();
+                    setCreateMenuOpen(false);
+                  }}
+                >
+                  Request
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    createCollection();
+                    setCreateMenuOpen(false);
+                  }}
+                >
+                  Collection
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    createFolder();
+                    setCreateMenuOpen(false);
+                  }}
+                >
+                  Pastas
+                </button>
+              </div>
+            ) : null}
+          </div>
           <label className="import-button ghost">
             Importar Environment
             <input
