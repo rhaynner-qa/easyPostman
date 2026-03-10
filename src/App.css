@@ -267,6 +267,7 @@ textarea {
   width: 8px;
   transform: translateX(-4px);
   cursor: col-resize;
+  z-index: 2;
 }
 
 .env-resizer:hover {
@@ -691,6 +692,7 @@ textarea {
   transform: translateX(-4px);
   cursor: col-resize;
   background: transparent;
+  z-index: 2;
 }
 
 .params-header .grid-resizer {
@@ -1015,6 +1017,33 @@ textarea {
 .test-error {
   color: #ff9c9c;
   grid-column: span 2;
+}
+
+.table-header-row.params-header {
+  grid-template-columns: 28px var(--params-key-width) 1fr 1fr 90px;
+  position: relative;
+}
+
+.postman-row.params-row {
+  grid-template-columns: 28px var(--params-key-width) 1fr 1fr 90px;
+}
+
+.table-header-row.headers-header {
+  grid-template-columns: 28px var(--headers-key-width) 1fr 1fr 90px;
+  position: relative;
+}
+
+.postman-row.headers-row {
+  grid-template-columns: 28px var(--headers-key-width) 1fr 1fr 90px;
+}
+
+.table-header-row.env-header {
+  grid-template-columns: var(--env-key-width) 1fr 36px;
+  position: relative;
+}
+
+.postman-row.env-row {
+  grid-template-columns: var(--env-key-width) 1fr 36px;
 }
 
 @media (max-width: 960px) {
