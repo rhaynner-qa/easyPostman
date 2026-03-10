@@ -1,5 +1,8 @@
 import { useMemo, useState } from "react";
 import { invoke } from "@tauri-apps/api/core";
+import CodeMirror from "@uiw/react-codemirror";
+import { javascript } from "@codemirror/lang-javascript";
+import { oneDark } from "@codemirror/theme-one-dark";
 import "./App.css";
 
 const METHOD_OPTIONS = ["GET", "POST", "PUT", "PATCH", "DELETE"];
@@ -1375,31 +1378,47 @@ function App() {
                   </button>
                 </div>
                 {scriptTab === "Pre" ? (
-                  <textarea
-                    value={requestDraft.scripts.pre}
-                    onChange={(event) =>
-                      updateRequest({
-                        scripts: {
-                          ...requestDraft.scripts,
-                          pre: event.target.value,
-                        },
-                      })
-                    }
-                    placeholder="pm.environment.set('token', '...');"
-                  />
+                  <div className="code-editor">
+                    <CodeMirror
+                      value={requestDraft.scripts.pre}
+                      height="200px"
+                      theme={oneDark}
+                      extensions={[javascript()]}
+                      onChange={(value) =>
+                        updateRequest({
+                          scripts: {
+                            ...requestDraft.scripts,
+                            pre: value,
+                          },
+                        })
+                      }
+                      basicSetup={{
+                        lineNumbers: true,
+                        foldGutter: false,
+                      }}
+                    />
+                  </div>
                 ) : (
-                  <textarea
-                    value={requestDraft.scripts.tests}
-                    onChange={(event) =>
-                      updateRequest({
-                        scripts: {
-                          ...requestDraft.scripts,
-                          tests: event.target.value,
-                        },
-                      })
-                    }
-                    placeholder="pm.test('status 200', () => pm.expect(pm.response.code).toBe(200));"
-                  />
+                  <div className="code-editor">
+                    <CodeMirror
+                      value={requestDraft.scripts.tests}
+                      height="200px"
+                      theme={oneDark}
+                      extensions={[javascript()]}
+                      onChange={(value) =>
+                        updateRequest({
+                          scripts: {
+                            ...requestDraft.scripts,
+                            tests: value,
+                          },
+                        })
+                      }
+                      basicSetup={{
+                        lineNumbers: true,
+                        foldGutter: false,
+                      }}
+                    />
+                  </div>
                 )}
               </div>
             ) : null}

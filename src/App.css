@@ -558,6 +558,24 @@ textarea {
   gap: 10px;
 }
 
+.code-editor {
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid #2f2f2f;
+  background: #1b1b1b;
+}
+
+.code-editor .cm-editor {
+  background: #1b1b1b;
+  color: #e6e6e6;
+  font-family: "JetBrains Mono", "SFMono-Regular", monospace;
+  font-size: 12px;
+}
+
+.code-editor .cm-scroller {
+  font-family: inherit;
+}
+
 .script-tabs {
   display: flex;
   gap: 6px;
