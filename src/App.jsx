@@ -464,6 +464,8 @@ function App() {
   const [sidebarTab, setSidebarTab] = useState("collections");
   const [editingFolderId, setEditingFolderId] = useState("");
   const [editingFolderName, setEditingFolderName] = useState("");
+  const [editingCollectionId, setEditingCollectionId] = useState("");
+  const [editingCollectionName, setEditingCollectionName] = useState("");
   const [createMenuOpen, setCreateMenuOpen] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState({
     open: false,
@@ -840,6 +842,11 @@ function App() {
     setEditingFolderName(folder.name);
   };
 
+  const startEditCollection = (collection) => {
+    setEditingCollectionId(collection.id);
+    setEditingCollectionName(collection.name);
+  };
+
   const commitEditFolder = () => {
     const name = editingFolderName.trim();
     if (!editingFolderId || !name) {
@@ -868,6 +875,24 @@ function App() {
     });
     setEditingFolderId("");
     setEditingFolderName("");
+  };
+
+  const commitEditCollection = () => {
+    const name = editingCollectionName.trim();
+    if (!editingCollectionId || !name) {
+      setEditingCollectionId("");
+      setEditingCollectionName("");
+      return;
+    }
+    setCollections((current) =>
+      current.map((collection) =>
+        collection.id === editingCollectionId
+          ? { ...collection, name }
+          : collection,
+      ),
+    );
+    setEditingCollectionId("");
+    setEditingCollectionName("");
   };
 
   const mapEnvRowsToValues = (rows) => {
@@ -1626,18 +1651,40 @@ function App() {
                       >
                         ▶
                       </button>
-                      <button
-                        type="button"
-                        className={`collection-title ${
-                          activeCollectionId === collection.id ? "active" : ""
-                        }`}
-                        onClick={() => {
-                          setActiveCollectionId(collection.id);
-                          setActiveFolderId("");
-                        }}
-                      >
-                        {collection.name}
-                      </button>
+                      {editingCollectionId === collection.id ? (
+                        <input
+                          className="collection-input"
+                          value={editingCollectionName}
+                          onChange={(event) =>
+                            setEditingCollectionName(event.target.value)
+                          }
+                          onBlur={commitEditCollection}
+                          onKeyDown={(event) => {
+                            if (event.key === "Enter") {
+                              commitEditCollection();
+                            }
+                            if (event.key === "Escape") {
+                              setEditingCollectionId("");
+                              setEditingCollectionName("");
+                            }
+                          }}
+                          autoFocus
+                        />
+                      ) : (
+                        <button
+                          type="button"
+                          className={`collection-title ${
+                            activeCollectionId === collection.id ? "active" : ""
+                          }`}
+                          onClick={() => {
+                            setActiveCollectionId(collection.id);
+                            setActiveFolderId("");
+                          }}
+                          onDoubleClick={() => startEditCollection(collection)}
+                        >
+                          {collection.name}
+                        </button>
+                      )}
                     </div>
                     {isOpen
                       ? renderCollectionItems(
