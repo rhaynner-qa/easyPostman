@@ -1527,7 +1527,7 @@ function App() {
                     Importar Collection
                     <input
                       type="file"
-                      accept=".json"
+                      accept=".postman_collection.json"
                       onChange={(event) => {
                         handleImportCollection(event);
                         setCreateMenuOpen(false);
@@ -1539,7 +1539,7 @@ function App() {
                     Importar Environment
                     <input
                       type="file"
-                      accept=".json"
+                      accept=".postman_environment.json"
                       onChange={(event) => {
                         handleImportEnvironment(event);
                         setCreateMenuOpen(false);
