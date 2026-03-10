@@ -448,6 +448,7 @@ function App() {
   const [activeEnvId, setActiveEnvId] = useState("");
   const [activeRequestId, setActiveRequestId] = useState("");
   const [expandedFolders, setExpandedFolders] = useState({});
+  const [expandedCollections, setExpandedCollections] = useState({});
   const [activeFolderId, setActiveFolderId] = useState("");
   const [draftParentId, setDraftParentId] = useState("");
   const [activeCollectionId, setActiveCollectionId] = useState("");
@@ -647,6 +648,10 @@ function App() {
       const data = JSON.parse(await file.text());
       const parsed = parseCollection(data);
       setCollections((current) => [...current, parsed]);
+      setExpandedCollections((current) => ({
+        ...current,
+        [parsed.id]: true,
+      }));
       setActiveCollectionId(parsed.id);
       setExpandedFolders((current) => {
         const next = { ...current };
@@ -742,6 +747,10 @@ function App() {
     };
     setCollections((current) => [newCollection, ...current]);
     setActiveCollectionId(newCollection.id);
+    setExpandedCollections((current) => ({
+      ...current,
+      [newCollection.id]: true,
+    }));
   };
 
   const createFolder = () => {
@@ -1352,6 +1361,13 @@ function App() {
     }));
   };
 
+  const toggleCollection = (collectionId) => {
+    setExpandedCollections((current) => ({
+      ...current,
+      [collectionId]: !current[collectionId],
+    }));
+  };
+
   const renderCollectionItems = (
     items,
     depth = 0,
@@ -1595,28 +1611,45 @@ function App() {
                 Importe uma collection do Postman para comecar.
               </div>
             ) : (
-              filteredCollections.map((collection) => (
-                <div key={collection.id} className="collection-block">
-                  <button
-                    type="button"
-                    className={`collection-title ${
-                      activeCollectionId === collection.id ? "active" : ""
-                    }`}
-                    onClick={() => {
-                      setActiveCollectionId(collection.id);
-                      setActiveFolderId("");
-                    }}
-                  >
-                    {collection.name}
-                  </button>
-                  {renderCollectionItems(
-                    collection.items,
-                    0,
-                    collection.id,
-                    "",
-                  )}
-                </div>
-              ))
+              filteredCollections.map((collection) => {
+                const isOpen = searchTerm.trim()
+                  ? true
+                  : expandedCollections[collection.id] ?? true;
+                return (
+                  <div key={collection.id} className="collection-block">
+                    <div className="collection-header">
+                      <button
+                        type="button"
+                        className={`collection-caret ${isOpen ? "open" : ""}`}
+                        onClick={() => toggleCollection(collection.id)}
+                        aria-label="Expandir collection"
+                      >
+                        ▶
+                      </button>
+                      <button
+                        type="button"
+                        className={`collection-title ${
+                          activeCollectionId === collection.id ? "active" : ""
+                        }`}
+                        onClick={() => {
+                          setActiveCollectionId(collection.id);
+                          setActiveFolderId("");
+                        }}
+                      >
+                        {collection.name}
+                      </button>
+                    </div>
+                    {isOpen
+                      ? renderCollectionItems(
+                          collection.items,
+                          0,
+                          collection.id,
+                          "",
+                        )
+                      : null}
+                  </div>
+                );
+              })
             )}
           </div>
         ) : (

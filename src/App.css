@@ -154,9 +154,41 @@ textarea {
   margin: 8px 0 16px;
 }
 
+.collection-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding-left: 4px;
+}
+
+.collection-caret {
+  width: 18px;
+  height: 18px;
+  border: 1px solid transparent;
+  border-radius: 5px;
+  background: transparent;
+  color: #909090;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 9px;
+  cursor: pointer;
+  transition: transform 0.15s ease, color 0.15s ease, border 0.15s ease;
+}
+
+.collection-caret:hover {
+  border-color: #2f2f2f;
+  color: #d2d2d2;
+}
+
+.collection-caret.open {
+  transform: rotate(90deg);
+  color: #d2d2d2;
+}
+
 .collection-title {
-  width: 100%;
-  padding: 6px 12px;
+  flex: 1;
+  padding: 6px 8px;
   font-size: 11px;
   font-weight: 600;
   color: #a7a7a7;
