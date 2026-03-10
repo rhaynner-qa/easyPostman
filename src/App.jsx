@@ -638,6 +638,11 @@ function App() {
   const handleImportCollection = async (event) => {
     const file = event.target.files?.[0];
     if (!file) return;
+    if (!file.name.endsWith(".postman_collection.json")) {
+      setImportError("Arquivo inválido. Selecione um .postman_collection.json.");
+      event.target.value = "";
+      return;
+    }
     try {
       const data = JSON.parse(await file.text());
       const parsed = parseCollection(data);
@@ -668,6 +673,14 @@ function App() {
   const handleImportEnvironment = async (event) => {
     const file = event.target.files?.[0];
     if (!file) return;
+    if (
+      !file.name.endsWith(".postman_environment") &&
+      !file.name.endsWith(".postman_environment.json")
+    ) {
+      setImportError("Arquivo inválido. Selecione um .postman_environment(.json).");
+      event.target.value = "";
+      return;
+    }
     try {
       const data = JSON.parse(await file.text());
       const parsed = parseEnvironment(data);
