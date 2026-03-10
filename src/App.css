@@ -66,6 +66,22 @@ textarea {
   justify-content: flex-start;
 }
 
+.sidebar-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.sidebar-search {
+  flex: 1;
+  border: 1px solid #2f2f2f;
+  background: #232323;
+  color: #e6e6e6;
+  padding: 6px 10px;
+  border-radius: 8px;
+  font-size: 12px;
+}
+
 .create-button {
   width: 32px;
   height: 32px;
@@ -127,12 +143,23 @@ textarea {
 }
 
 .collection-title {
+  width: 100%;
   padding: 6px 12px;
   font-size: 11px;
   font-weight: 600;
   color: #a7a7a7;
   text-transform: uppercase;
   letter-spacing: 0.04em;
+  background: transparent;
+  border: none;
+  text-align: left;
+  cursor: pointer;
+  border-radius: 6px;
+}
+
+.collection-title.active {
+  background: #2a2a2a;
+  color: #e6e6e6;
 }
 
 .collection-item {

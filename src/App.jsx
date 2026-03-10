@@ -450,12 +450,15 @@ function App() {
   const [expandedFolders, setExpandedFolders] = useState({});
   const [activeFolderId, setActiveFolderId] = useState("");
   const [draftParentId, setDraftParentId] = useState("");
+  const [activeCollectionId, setActiveCollectionId] = useState("");
+  const [draftCollectionId, setDraftCollectionId] = useState("");
   const [activeTab, setActiveTab] = useState("Params");
   const [scriptTab, setScriptTab] = useState("Pre");
   const [response, setResponse] = useState(null);
   const [testResults, setTestResults] = useState([]);
   const [runs, setRuns] = useState([]);
   const [isDirty, setIsDirty] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
   const [sidebarTab, setSidebarTab] = useState("collections");
   const [editingFolderId, setEditingFolderId] = useState("");
   const [editingFolderName, setEditingFolderName] = useState("");
@@ -597,6 +600,7 @@ function App() {
       const data = JSON.parse(await file.text());
       const parsed = parseCollection(data);
       setCollections((current) => [...current, parsed]);
+      setActiveCollectionId(parsed.id);
       setExpandedFolders((current) => {
         const next = { ...current };
         const markExpanded = (items) => {
@@ -645,8 +649,10 @@ function App() {
     event.target.value = "";
   };
 
-  const selectRequest = (item) => {
+  const selectRequest = (item, collectionId = "", folderId = "") => {
     setActiveRequestId(item.id);
+    setActiveCollectionId(collectionId);
+    setActiveFolderId(folderId);
     updateRequest({
       name: item.name,
       method: item.request.method,
@@ -658,6 +664,7 @@ function App() {
     });
     setIsDirty(false);
     setDraftParentId("");
+    setDraftCollectionId("");
     setResponse(null);
     setTestResults([]);
   };
@@ -667,25 +674,68 @@ function App() {
     setRequestDraft(createEmptyDraft());
     setIsDirty(false);
     setDraftParentId(activeFolderId || "");
+    setDraftCollectionId(activeFolderId ? "" : activeCollectionId || "");
     setResponse(null);
     setTestResults([]);
   };
 
   const createCollection = () => {
-    setCollections((current) => [
-      {
-        id: createId(),
-        name: "Nova Collection",
-        items: [],
-      },
-      ...current,
-    ]);
+    const newCollection = {
+      id: createId(),
+      name: "Nova Collection",
+      items: [],
+    };
+    setCollections((current) => [newCollection, ...current]);
+    setActiveCollectionId(newCollection.id);
   };
 
   const createFolder = () => {
     let folderId = "";
     setCollections((current) => {
       const next = [...current];
+      folderId = createId();
+      const newFolder = {
+        id: folderId,
+        type: "folder",
+        name: "Nova Pasta",
+        children: [],
+      };
+
+      const insertIntoFolder = (items) =>
+        items.map((item) => {
+          if (item.type === "folder" && item.id === activeFolderId) {
+            return {
+              ...item,
+              children: [...(item.children ?? []), newFolder],
+            };
+          }
+          if (item.type === "folder") {
+            return {
+              ...item,
+              children: insertIntoFolder(item.children ?? []),
+            };
+          }
+          return item;
+        });
+
+      if (activeFolderId) {
+        return next.map((collection) => ({
+          ...collection,
+          items: insertIntoFolder(collection.items ?? []),
+        }));
+      }
+
+      if (activeCollectionId) {
+        return next.map((collection) =>
+          collection.id === activeCollectionId
+            ? {
+                ...collection,
+                items: [...(collection.items ?? []), newFolder],
+              }
+            : collection,
+        );
+      }
+
       const localIndex = next.findIndex(
         (collection) => collection.name === "Local",
       );
@@ -697,13 +747,6 @@ function App() {
               name: "Local",
               items: [],
             };
-      folderId = createId();
-      const newFolder = {
-        id: folderId,
-        type: "folder",
-        name: "Nova Pasta",
-        children: [],
-      };
       const updatedLocal = {
         ...localCollection,
         items: [...(localCollection.items ?? []), newFolder],
@@ -722,8 +765,9 @@ function App() {
     }
   };
 
-  const selectFolder = (folderId) => {
+  const selectFolder = (folderId, collectionId) => {
     setActiveFolderId(folderId);
+    setActiveCollectionId(collectionId);
     setActiveRequestId("");
   };
 
@@ -949,6 +993,24 @@ function App() {
         }));
       }
 
+      if (draftCollectionId) {
+        return current.map((collection) =>
+          collection.id === draftCollectionId
+            ? {
+                ...collection,
+                items: [
+                  ...(collection.items ?? []),
+                  {
+                    id: newRequestId,
+                    type: "request",
+                    ...payload,
+                  },
+                ],
+              }
+            : collection,
+        );
+      }
+
       const localIndex = current.findIndex(
         (collection) => collection.name === "Local",
       );
@@ -983,6 +1045,7 @@ function App() {
     setActiveRequestId(newRequestId);
     setIsDirty(false);
     setDraftParentId("");
+    setDraftCollectionId("");
   };
 
   const recordRun = (payload) => {
@@ -1137,7 +1200,12 @@ function App() {
     }));
   };
 
-  const renderCollectionItems = (items, depth = 0) =>
+  const renderCollectionItems = (
+    items,
+    depth = 0,
+    collectionId = "",
+    parentId = "",
+  ) =>
     items.map((item) => {
       if (item.type === "folder") {
         const isOpen = expandedFolders[item.id] ?? false;
@@ -1180,7 +1248,7 @@ function App() {
                 <button
                   type="button"
                   className="folder-name"
-                  onClick={() => selectFolder(item.id)}
+                  onClick={() => selectFolder(item.id, collectionId)}
                   onDoubleClick={() => startEditFolder(item)}
                 >
                   {item.name}
@@ -1189,7 +1257,12 @@ function App() {
             </div>
             {isOpen ? (
               <div className="folder-children">
-                {renderCollectionItems(item.children ?? [], depth + 1)}
+                {renderCollectionItems(
+                  item.children ?? [],
+                  depth + 1,
+                  collectionId,
+                  item.id,
+                )}
               </div>
             ) : null}
           </div>
@@ -1208,7 +1281,7 @@ function App() {
             className={`collection-item ${
               activeRequestId === item.id ? "active" : ""
             }`}
-            onClick={() => selectRequest(item)}
+            onClick={() => selectRequest(item, collectionId, parentId)}
           >
             <span className={`method-pill method-${item.request.method}`}>
               {item.request.method}
@@ -1228,6 +1301,42 @@ function App() {
       );
     });
 
+  const filteredCollections = useMemo(() => {
+    const term = searchTerm.trim().toLowerCase();
+    if (!term) return collections;
+
+    const filterItems = (items) =>
+      items
+        .map((item) => {
+          if (item.type === "folder") {
+            const children = filterItems(item.children ?? []);
+            const match = item.name.toLowerCase().includes(term);
+            if (match) {
+              return { ...item, children: item.children ?? [] };
+            }
+            if (children.length) {
+              return { ...item, children };
+            }
+            return null;
+          }
+          if (item.type === "request") {
+            return item.name.toLowerCase().includes(term) ? item : null;
+          }
+          return null;
+        })
+        .filter(Boolean);
+
+    return collections
+      .map((collection) => {
+        const match = collection.name.toLowerCase().includes(term);
+        if (match) return collection;
+        const items = filterItems(collection.items ?? []);
+        if (!items.length) return null;
+        return { ...collection, items };
+      })
+      .filter(Boolean);
+  }, [collections, searchTerm]);
+
   return (
     <div className="app-shell">
       <aside className="sidebar">
@@ -1236,70 +1345,78 @@ function App() {
             <div className="app-name">easyPostman</div>
             <div className="app-subtitle">Colecoes locais</div>
           </div>
-          <div className="create-menu">
-            <button
-              type="button"
-              className="create-button"
-              onClick={() => setCreateMenuOpen((open) => !open)}
-              aria-label="Criar"
-            >
-              +
-            </button>
-            {createMenuOpen ? (
-              <div className="create-dropdown">
-                <button
-                  type="button"
-                  onClick={() => {
-                    createNewRequest();
-                    setCreateMenuOpen(false);
-                  }}
-                >
-                  Request
-                </button>
-                <button
-                  type="button"
-                  onClick={() => {
-                    createCollection();
-                    setCreateMenuOpen(false);
-                  }}
-                >
-                  Collection
-                </button>
-                <button
-                  type="button"
-                  onClick={() => {
-                    createFolder();
-                    setCreateMenuOpen(false);
-                  }}
-                >
-                  Pastas
-                </button>
-                <label className="dropdown-item">
-                  Importar Collection
-                  <input
-                    type="file"
-                    accept=".json"
-                    onChange={(event) => {
-                      handleImportCollection(event);
+          <div className="sidebar-actions">
+            <div className="create-menu">
+              <button
+                type="button"
+                className="create-button"
+                onClick={() => setCreateMenuOpen((open) => !open)}
+                aria-label="Criar"
+              >
+                +
+              </button>
+              {createMenuOpen ? (
+                <div className="create-dropdown">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      createNewRequest();
                       setCreateMenuOpen(false);
                     }}
-                    hidden
-                  />
-                </label>
-                <label className="dropdown-item">
-                  Importar Environment
-                  <input
-                    type="file"
-                    accept=".json"
-                    onChange={(event) => {
-                      handleImportEnvironment(event);
+                  >
+                    Request
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      createCollection();
                       setCreateMenuOpen(false);
                     }}
-                    hidden
-                  />
-                </label>
-              </div>
-            ) : null}
+                  >
+                    Collection
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      createFolder();
+                      setCreateMenuOpen(false);
+                    }}
+                  >
+                    Pastas
+                  </button>
+                  <label className="dropdown-item">
+                    Importar Collection
+                    <input
+                      type="file"
+                      accept=".json"
+                      onChange={(event) => {
+                        handleImportCollection(event);
+                        setCreateMenuOpen(false);
+                      }}
+                      hidden
+                    />
+                  </label>
+                  <label className="dropdown-item">
+                    Importar Environment
+                    <input
+                      type="file"
+                      accept=".json"
+                      onChange={(event) => {
+                        handleImportEnvironment(event);
+                        setCreateMenuOpen(false);
+                      }}
+                      hidden
+                    />
+                  </label>
+                </div>
+              ) : null}
+            </div>
+            <input
+              className="sidebar-search"
+              value={searchTerm}
+              onChange={(event) => setSearchTerm(event.target.value)}
+              placeholder="Pesquisar requests..."
+            />
           </div>
         </div>
         {importError ? <div className="import-error">{importError}</div> : null}
@@ -1321,15 +1438,31 @@ function App() {
         </div>
         {sidebarTab === "collections" ? (
           <div className="collection-list">
-            {collections.length === 0 ? (
+            {filteredCollections.length === 0 ? (
               <div className="empty-hint">
                 Importe uma collection do Postman para comecar.
               </div>
             ) : (
-              collections.map((collection) => (
+              filteredCollections.map((collection) => (
                 <div key={collection.id} className="collection-block">
-                  <div className="collection-title">{collection.name}</div>
-                  {renderCollectionItems(collection.items)}
+                  <button
+                    type="button"
+                    className={`collection-title ${
+                      activeCollectionId === collection.id ? "active" : ""
+                    }`}
+                    onClick={() => {
+                      setActiveCollectionId(collection.id);
+                      setActiveFolderId("");
+                    }}
+                  >
+                    {collection.name}
+                  </button>
+                  {renderCollectionItems(
+                    collection.items,
+                    0,
+                    collection.id,
+                    "",
+                  )}
                 </div>
               ))
             )}
