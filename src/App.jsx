@@ -454,6 +454,11 @@ function App() {
   const [testResults, setTestResults] = useState([]);
   const [runs, setRuns] = useState([]);
   const [isDirty, setIsDirty] = useState(false);
+  const [confirmDelete, setConfirmDelete] = useState({
+    open: false,
+    id: "",
+    name: "",
+  });
   const [bulkEdit, setBulkEdit] = useState({
     params: { open: false, text: "" },
     headers: { open: false, text: "" },
@@ -643,6 +648,42 @@ function App() {
     setIsDirty(false);
     setResponse(null);
     setTestResults([]);
+  };
+
+  const removeRequestById = (items, id) =>
+    items
+      .filter((item) => !(item.type === "request" && item.id === id))
+      .map((item) => {
+        if (item.type === "folder") {
+          return {
+            ...item,
+            children: removeRequestById(item.children ?? [], id),
+          };
+        }
+        return item;
+      });
+
+  const askDeleteRequest = (item) => {
+    setConfirmDelete({ open: true, id: item.id, name: item.name });
+  };
+
+  const cancelDeleteRequest = () => {
+    setConfirmDelete({ open: false, id: "", name: "" });
+  };
+
+  const confirmDeleteRequest = () => {
+    const requestId = confirmDelete.id;
+    if (!requestId) return;
+    setCollections((current) =>
+      current.map((collection) => ({
+        ...collection,
+        items: removeRequestById(collection.items ?? [], requestId),
+      })),
+    );
+    if (activeRequestId === requestId) {
+      createNewRequest();
+    }
+    cancelDeleteRequest();
   };
 
   const commitEnvValues = (values) => {
@@ -905,20 +946,35 @@ function App() {
         );
       }
       return (
-        <button
+        <div
           key={item.id}
-          type="button"
-          className={`collection-item ${
+          className={`collection-item-row ${
             activeRequestId === item.id ? "active" : ""
           }`}
           style={{ paddingLeft: 12 + depth * 12 }}
-          onClick={() => selectRequest(item)}
         >
-          <span className={`method-pill method-${item.request.method}`}>
-            {item.request.method}
-          </span>
-          <span className="item-name">{item.name}</span>
-        </button>
+          <button
+            type="button"
+            className={`collection-item ${
+              activeRequestId === item.id ? "active" : ""
+            }`}
+            onClick={() => selectRequest(item)}
+          >
+            <span className={`method-pill method-${item.request.method}`}>
+              {item.request.method}
+            </span>
+            <span className="item-name">{item.name}</span>
+          </button>
+          <button
+            type="button"
+            className="item-delete"
+            onClick={(event) => {
+              event.stopPropagation();
+              askDeleteRequest(item);
+            }}
+            aria-label="Excluir request"
+          />
+        </div>
       );
     });
 
@@ -1514,6 +1570,32 @@ function App() {
           </div>
         </div>
       </section>
+      {confirmDelete.open ? (
+        <div className="modal-backdrop">
+          <div className="modal">
+            <div className="modal-title">Excluir request?</div>
+            <div className="modal-body">
+              Tem certeza que deseja excluir "{confirmDelete.name}"?
+            </div>
+            <div className="modal-actions">
+              <button
+                type="button"
+                className="modal-cancel"
+                onClick={cancelDeleteRequest}
+              >
+                Nao
+              </button>
+              <button
+                type="button"
+                className="modal-confirm"
+                onClick={confirmDeleteRequest}
+              >
+                Sim
+              </button>
+            </div>
+          </div>
+        </div>
+      ) : null}
     </div>
   );
 }

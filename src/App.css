@@ -116,6 +116,39 @@ textarea {
   border-radius: 8px;
 }
 
+.collection-item-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.collection-item-row .collection-item {
+  flex: 1;
+}
+
+.collection-item-row .collection-item.active {
+  background: #2a2a2a;
+}
+
+.item-delete {
+  width: 22px;
+  height: 22px;
+  border-radius: 6px;
+  border: 1px solid #2f2f2f;
+  background-color: #232323;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23aeb4bf' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><polyline points='3 6 5 6 21 6'/><path d='M8 6V4h8v2'/><path d='M19 6l-1 14H6L5 6'/><line x1='10' y1='11' x2='10' y2='17'/><line x1='14' y1='11' x2='14' y2='17'/></svg>");
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 12px 12px;
+  cursor: pointer;
+  flex: 0 0 auto;
+}
+
+.item-delete:hover {
+  border-color: #3a3a3a;
+  background-color: #2a2a2a;
+}
+
 .collection-item:hover {
   background: #242424;
 }
@@ -149,6 +182,63 @@ textarea {
 .folder-children {
   margin-left: 6px;
   border-left: 1px solid #2a2a2a;
+}
+
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 20;
+}
+
+.modal {
+  width: min(420px, 90vw);
+  background: #1f1f1f;
+  border: 1px solid #2f2f2f;
+  border-radius: 12px;
+  padding: 16px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.35);
+}
+
+.modal-title {
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+
+.modal-body {
+  font-size: 12px;
+  color: #c7cbd4;
+}
+
+.modal-actions {
+  margin-top: 16px;
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.modal-cancel,
+.modal-confirm {
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.modal-cancel {
+  border: 1px solid #2f2f2f;
+  background: #232323;
+  color: #e6e6e6;
+}
+
+.modal-confirm {
+  border: none;
+  background: #d92d20;
+  color: #fff;
 }
 
 .method-pill {
