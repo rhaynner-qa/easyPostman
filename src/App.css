@@ -232,7 +232,7 @@ textarea {
   width: min(420px, 90vw);
   background: #1f1f1f;
   border: 1px solid #2f2f2f;
-  border-radius: 12px;
+  border-radius: 8px;
   padding: 16px;
   box-shadow: 0 20px 40px rgba(0, 0, 0, 0.35);
 }
@@ -370,7 +370,7 @@ textarea {
 .request-panel,
 .response-panel {
   background: #202020;
-  border-radius: 14px;
+  border-radius: 8px;
   border: 1px solid #2b2b2b;
   padding: 16px;
 }
@@ -501,7 +501,7 @@ textarea {
 
 .postman-grid {
   border: 1px solid #2f2f2f;
-  border-radius: 12px;
+  border-radius: 6px;
   overflow: hidden;
   gap: 0;
   background: #1e1e1e;
@@ -660,7 +660,7 @@ textarea {
 .scripts-panel textarea {
   width: 100%;
   min-height: 160px;
-  border-radius: 12px;
+  border-radius: 6px;
   border: 1px solid #2f2f2f;
   padding: 12px;
   background: #1e1e1e;
@@ -683,7 +683,7 @@ textarea {
 }
 
 .code-editor {
-  border-radius: 12px;
+  border-radius: 6px;
   overflow: hidden;
   border: 1px solid #2f2f2f;
   background: #1b1b1b;
@@ -762,7 +762,7 @@ textarea {
 
 .response-body {
   background: #1b1b1b;
-  border-radius: 12px;
+  border-radius: 6px;
   padding: 12px;
   min-height: 160px;
   overflow: auto;
