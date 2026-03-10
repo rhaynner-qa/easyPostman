@@ -346,16 +346,15 @@ textarea {
   color: #a7a7a7;
   text-transform: uppercase;
   letter-spacing: 0.04em;
-  padding: 10px 12px 0;
+  padding: 0 4px 6px;
 }
 
 .table-header-row {
   display: grid;
   grid-template-columns: 28px 1.2fr 1fr 1fr 90px;
-  gap: 8px;
   align-items: center;
-  padding: 8px 12px;
-  border-top: 1px solid #2f2f2f;
+  padding: 0;
+  border-bottom: 1px solid #303030;
   background: #222222;
   color: #9aa0aa;
   font-size: 12px;
@@ -380,10 +379,9 @@ textarea {
 .postman-row {
   display: grid;
   grid-template-columns: 28px 1.2fr 1fr 1fr 90px;
-  gap: 8px;
   align-items: center;
-  padding: 8px 12px;
-  border-top: 1px solid #2a2a2a;
+  padding: 0;
+  border-bottom: 1px solid #303030;
 }
 
 .postman-row input[type="checkbox"] {
@@ -391,13 +389,32 @@ textarea {
   height: 14px;
 }
 
+.postman-cell {
+  display: flex;
+  align-items: center;
+  padding: 8px 10px;
+  border-right: 1px solid #303030;
+  min-height: 34px;
+}
+
+.postman-cell:last-child {
+  border-right: none;
+}
+
+.checkbox-cell {
+  justify-content: center;
+}
+
+.bulk-cell {
+  justify-content: flex-end;
+}
+
 .postman-row input:not([type="checkbox"]) {
   background: transparent;
   border: none;
-  padding: 6px 4px;
-  border-radius: 6px;
   color: #e6e6e6;
   outline: none;
+  width: 100%;
 }
 
 .postman-row input:not([type="checkbox"]):focus {

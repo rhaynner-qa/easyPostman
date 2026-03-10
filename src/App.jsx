@@ -810,146 +810,174 @@ function App() {
             </div>
 
             {activeTab === "Params" ? (
-              <div className="table-grid postman-grid">
+              <div className="table-grid">
                 <div className="table-header">Query Params</div>
-                <div className="table-header-row">
-                  <span />
-                  <span>Key</span>
-                  <span>Value</span>
-                  <span>Description</span>
-                  <button type="button" className="bulk-button">
-                    Bulk Edit
-                  </button>
-                </div>
-                {requestDraft.params.map((param, index) => (
-                  <div
-                    key={`param-${index}`}
-                    className={`table-row postman-row ${
-                      param.enabled ? "" : "disabled"
-                    }`}
-                  >
-                    <input
-                      type="checkbox"
-                      checked={param.enabled}
-                      onChange={(event) =>
-                        updateRowEnabled(
-                          "params",
-                          index,
-                          event.target.checked,
-                        )
-                      }
-                    />
-                    <input
-                      value={param.key}
-                      placeholder="Key"
-                      onChange={(event) =>
-                        updateKeyValue(
-                          "params",
-                          index,
-                          "key",
-                          event.target.value,
-                        )
-                      }
-                    />
-                    <input
-                      value={param.value}
-                      placeholder="Value"
-                      onChange={(event) =>
-                        updateKeyValue(
-                          "params",
-                          index,
-                          "value",
-                          event.target.value,
-                        )
-                      }
-                    />
-                    <input
-                      value={param.description}
-                      placeholder="Description"
-                      onChange={(event) =>
-                        updateKeyValue(
-                          "params",
-                          index,
-                          "description",
-                          event.target.value,
-                        )
-                      }
-                    />
-                    <span className="bulk-placeholder" />
+                <div className="postman-grid">
+                  <div className="table-header-row">
+                    <div className="postman-cell checkbox-cell" />
+                    <div className="postman-cell">Key</div>
+                    <div className="postman-cell">Value</div>
+                    <div className="postman-cell">Description</div>
+                    <div className="postman-cell bulk-cell">
+                      <button type="button" className="bulk-button">
+                        Bulk Edit
+                      </button>
+                    </div>
                   </div>
-                ))}
+                  {requestDraft.params.map((param, index) => (
+                    <div
+                      key={`param-${index}`}
+                      className={`postman-row ${
+                        param.enabled ? "" : "disabled"
+                      }`}
+                    >
+                      <div className="postman-cell checkbox-cell">
+                        <input
+                          type="checkbox"
+                          checked={param.enabled}
+                          onChange={(event) =>
+                            updateRowEnabled(
+                              "params",
+                              index,
+                              event.target.checked,
+                            )
+                          }
+                        />
+                      </div>
+                      <div className="postman-cell">
+                        <input
+                          value={param.key}
+                          placeholder="Key"
+                          onChange={(event) =>
+                            updateKeyValue(
+                              "params",
+                              index,
+                              "key",
+                              event.target.value,
+                            )
+                          }
+                        />
+                      </div>
+                      <div className="postman-cell">
+                        <input
+                          value={param.value}
+                          placeholder="Value"
+                          onChange={(event) =>
+                            updateKeyValue(
+                              "params",
+                              index,
+                              "value",
+                              event.target.value,
+                            )
+                          }
+                        />
+                      </div>
+                      <div className="postman-cell">
+                        <input
+                          value={param.description}
+                          placeholder="Description"
+                          onChange={(event) =>
+                            updateKeyValue(
+                              "params",
+                              index,
+                              "description",
+                              event.target.value,
+                            )
+                          }
+                        />
+                      </div>
+                      <div className="postman-cell bulk-cell">
+                        <span className="bulk-placeholder" />
+                      </div>
+                    </div>
+                  ))}
+                </div>
               </div>
             ) : null}
 
             {activeTab === "Headers" ? (
-              <div className="table-grid postman-grid">
+              <div className="table-grid">
                 <div className="table-header">Headers</div>
-                <div className="table-header-row">
-                  <span />
-                  <span>Key</span>
-                  <span>Value</span>
-                  <span>Description</span>
-                  <button type="button" className="bulk-button">
-                    Bulk Edit
-                  </button>
-                </div>
-                {requestDraft.headers.map((header, index) => (
-                  <div
-                    key={`header-${index}`}
-                    className={`table-row postman-row ${
-                      header.enabled ? "" : "disabled"
-                    }`}
-                  >
-                    <input
-                      type="checkbox"
-                      checked={header.enabled}
-                      onChange={(event) =>
-                        updateRowEnabled(
-                          "headers",
-                          index,
-                          event.target.checked,
-                        )
-                      }
-                    />
-                    <input
-                      value={header.key}
-                      placeholder="Key"
-                      onChange={(event) =>
-                        updateKeyValue(
-                          "headers",
-                          index,
-                          "key",
-                          event.target.value,
-                        )
-                      }
-                    />
-                    <input
-                      value={header.value}
-                      placeholder="Value"
-                      onChange={(event) =>
-                        updateKeyValue(
-                          "headers",
-                          index,
-                          "value",
-                          event.target.value,
-                        )
-                      }
-                    />
-                    <input
-                      value={header.description}
-                      placeholder="Description"
-                      onChange={(event) =>
-                        updateKeyValue(
-                          "headers",
-                          index,
-                          "description",
-                          event.target.value,
-                        )
-                      }
-                    />
-                    <span className="bulk-placeholder" />
+                <div className="postman-grid">
+                  <div className="table-header-row">
+                    <div className="postman-cell checkbox-cell" />
+                    <div className="postman-cell">Key</div>
+                    <div className="postman-cell">Value</div>
+                    <div className="postman-cell">Description</div>
+                    <div className="postman-cell bulk-cell">
+                      <button type="button" className="bulk-button">
+                        Bulk Edit
+                      </button>
+                    </div>
                   </div>
-                ))}
+                  {requestDraft.headers.map((header, index) => (
+                    <div
+                      key={`header-${index}`}
+                      className={`postman-row ${
+                        header.enabled ? "" : "disabled"
+                      }`}
+                    >
+                      <div className="postman-cell checkbox-cell">
+                        <input
+                          type="checkbox"
+                          checked={header.enabled}
+                          onChange={(event) =>
+                            updateRowEnabled(
+                              "headers",
+                              index,
+                              event.target.checked,
+                            )
+                          }
+                        />
+                      </div>
+                      <div className="postman-cell">
+                        <input
+                          value={header.key}
+                          placeholder="Key"
+                          onChange={(event) =>
+                            updateKeyValue(
+                              "headers",
+                              index,
+                              "key",
+                              event.target.value,
+                            )
+                          }
+                        />
+                      </div>
+                      <div className="postman-cell">
+                        <input
+                          value={header.value}
+                          placeholder="Value"
+                          onChange={(event) =>
+                            updateKeyValue(
+                              "headers",
+                              index,
+                              "value",
+                              event.target.value,
+                            )
+                          }
+                        />
+                      </div>
+                      <div className="postman-cell">
+                        <input
+                          value={header.description}
+                          placeholder="Description"
+                          onChange={(event) =>
+                            updateKeyValue(
+                              "headers",
+                              index,
+                              "description",
+                              event.target.value,
+                            )
+                          }
+                        />
+                      </div>
+                      <div className="postman-cell bulk-cell">
+                        <span className="bulk-placeholder" />
+                      </div>
+                    </div>
+                  ))}
+                </div>
               </div>
             ) : null}
 
