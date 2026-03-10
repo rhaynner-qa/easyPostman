@@ -657,6 +657,54 @@ textarea {
   background: #1e1e1e;
 }
 
+.params-grid,
+.headers-grid {
+  position: relative;
+  --params-key-width: 220px;
+  --headers-key-width: 220px;
+}
+
+.params-header {
+  grid-template-columns: 28px var(--params-key-width) 1fr 1fr 90px;
+  position: relative;
+}
+
+.params-row {
+  grid-template-columns: 28px var(--params-key-width) 1fr 1fr 90px;
+}
+
+.headers-header {
+  grid-template-columns: 28px var(--headers-key-width) 1fr 1fr 90px;
+  position: relative;
+}
+
+.headers-row {
+  grid-template-columns: 28px var(--headers-key-width) 1fr 1fr 90px;
+}
+
+.grid-resizer {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 8px;
+  transform: translateX(-4px);
+  cursor: col-resize;
+  background: transparent;
+}
+
+.params-header .grid-resizer {
+  left: calc(28px + var(--params-key-width));
+}
+
+.headers-header .grid-resizer {
+  left: calc(28px + var(--headers-key-width));
+}
+
+.grid-resizer:hover {
+  background: rgba(255, 255, 255, 0.06);
+}
+
 .table-header {
   font-size: 12px;
   color: #a7a7a7;

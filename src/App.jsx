@@ -475,18 +475,38 @@ function App() {
     headers: { open: false, text: "" },
   });
   const [envKeyWidth, setEnvKeyWidth] = useState(180);
+  const [paramsKeyWidth, setParamsKeyWidth] = useState(220);
+  const [headersKeyWidth, setHeadersKeyWidth] = useState(220);
   const envGridRef = useRef(null);
+  const paramsGridRef = useRef(null);
+  const headersGridRef = useRef(null);
 
   useEffect(() => {
-    const stored = Number(localStorage.getItem("envKeyWidth"));
-    if (stored && !Number.isNaN(stored)) {
-      setEnvKeyWidth(stored);
+    const envStored = Number(localStorage.getItem("envKeyWidth"));
+    if (envStored && !Number.isNaN(envStored)) {
+      setEnvKeyWidth(envStored);
+    }
+    const paramsStored = Number(localStorage.getItem("paramsKeyWidth"));
+    if (paramsStored && !Number.isNaN(paramsStored)) {
+      setParamsKeyWidth(paramsStored);
+    }
+    const headersStored = Number(localStorage.getItem("headersKeyWidth"));
+    if (headersStored && !Number.isNaN(headersStored)) {
+      setHeadersKeyWidth(headersStored);
     }
   }, []);
 
   useEffect(() => {
     localStorage.setItem("envKeyWidth", String(envKeyWidth));
   }, [envKeyWidth]);
+
+  useEffect(() => {
+    localStorage.setItem("paramsKeyWidth", String(paramsKeyWidth));
+  }, [paramsKeyWidth]);
+
+  useEffect(() => {
+    localStorage.setItem("headersKeyWidth", String(headersKeyWidth));
+  }, [headersKeyWidth]);
   const [isSending, setIsSending] = useState(false);
   const [importError, setImportError] = useState("");
 
@@ -907,6 +927,56 @@ function App() {
       const delta = moveEvent.clientX - startX;
       const next = Math.min(max, Math.max(min, startWidth + delta));
       setEnvKeyWidth(next);
+    };
+
+    const handleUp = () => {
+      window.removeEventListener("mousemove", handleMove);
+      window.removeEventListener("mouseup", handleUp);
+    };
+
+    window.addEventListener("mousemove", handleMove);
+    window.addEventListener("mouseup", handleUp);
+  };
+
+  const startParamsResize = (event) => {
+    event.preventDefault();
+    const grid = paramsGridRef.current;
+    if (!grid) return;
+    const rect = grid.getBoundingClientRect();
+    const startX = event.clientX;
+    const startWidth = paramsKeyWidth;
+    const min = 140;
+    const max = Math.max(220, rect.width - 90 - 120);
+
+    const handleMove = (moveEvent) => {
+      const delta = moveEvent.clientX - startX;
+      const next = Math.min(max, Math.max(min, startWidth + delta));
+      setParamsKeyWidth(next);
+    };
+
+    const handleUp = () => {
+      window.removeEventListener("mousemove", handleMove);
+      window.removeEventListener("mouseup", handleUp);
+    };
+
+    window.addEventListener("mousemove", handleMove);
+    window.addEventListener("mouseup", handleUp);
+  };
+
+  const startHeadersResize = (event) => {
+    event.preventDefault();
+    const grid = headersGridRef.current;
+    if (!grid) return;
+    const rect = grid.getBoundingClientRect();
+    const startX = event.clientX;
+    const startWidth = headersKeyWidth;
+    const min = 140;
+    const max = Math.max(220, rect.width - 90 - 120);
+
+    const handleMove = (moveEvent) => {
+      const delta = moveEvent.clientX - startX;
+      const next = Math.min(max, Math.max(min, startWidth + delta));
+      setHeadersKeyWidth(next);
     };
 
     const handleUp = () => {
@@ -1689,10 +1759,14 @@ function App() {
             {activeTab === "Params" ? (
               <div className="table-grid">
                 <div className="table-header">Query Params</div>
-                <div className="postman-grid">
-                  <div className="table-header-row">
+                <div
+                  className="postman-grid params-grid"
+                  ref={paramsGridRef}
+                  style={{ "--params-key-width": `${paramsKeyWidth}px` }}
+                >
+                  <div className="table-header-row params-header">
                     <div className="postman-cell checkbox-cell" />
-                    <div className="postman-cell">Header</div>
+                    <div className="postman-cell">Key</div>
                     <div className="postman-cell">Value</div>
                     <div className="postman-cell">Description</div>
                     <div className="postman-cell bulk-cell">
@@ -1704,6 +1778,10 @@ function App() {
                         Bulk Edit
                       </button>
                     </div>
+                    <div
+                      className="grid-resizer"
+                      onMouseDown={startParamsResize}
+                    />
                   </div>
                   {bulkEdit.params.open ? (
                     <div className="bulk-editor">
@@ -1735,7 +1813,7 @@ function App() {
                   {requestDraft.params.map((param, index) => (
                     <div
                       key={`param-${index}`}
-                      className={`postman-row ${
+                      className={`postman-row params-row ${
                         param.enabled ? "" : "disabled"
                       }`}
                     >
@@ -1838,8 +1916,12 @@ function App() {
             {activeTab === "Headers" ? (
               <div className="table-grid">
                 <div className="table-header">Headers</div>
-                <div className="postman-grid">
-                  <div className="table-header-row">
+                <div
+                  className="postman-grid headers-grid"
+                  ref={headersGridRef}
+                  style={{ "--headers-key-width": `${headersKeyWidth}px` }}
+                >
+                  <div className="table-header-row headers-header">
                     <div className="postman-cell checkbox-cell" />
                     <div className="postman-cell">Header</div>
                     <div className="postman-cell">Value</div>
@@ -1853,6 +1935,10 @@ function App() {
                         Bulk Edit
                       </button>
                     </div>
+                    <div
+                      className="grid-resizer"
+                      onMouseDown={startHeadersResize}
+                    />
                   </div>
                   {bulkEdit.headers.open ? (
                     <div className="bulk-editor">
@@ -1884,7 +1970,7 @@ function App() {
                   {requestDraft.headers.map((header, index) => (
                     <div
                       key={`header-${index}`}
-                      className={`postman-row ${
+                      className={`postman-row headers-row ${
                         header.enabled ? "" : "disabled"
                       }`}
                     >
