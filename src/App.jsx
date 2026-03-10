@@ -1,4 +1,4 @@
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { invoke } from "@tauri-apps/api/core";
 import CodeMirror from "@uiw/react-codemirror";
 import { javascript } from "@codemirror/lang-javascript";
@@ -476,6 +476,17 @@ function App() {
   });
   const [envKeyWidth, setEnvKeyWidth] = useState(180);
   const envGridRef = useRef(null);
+
+  useEffect(() => {
+    const stored = Number(localStorage.getItem("envKeyWidth"));
+    if (stored && !Number.isNaN(stored)) {
+      setEnvKeyWidth(stored);
+    }
+  }, []);
+
+  useEffect(() => {
+    localStorage.setItem("envKeyWidth", String(envKeyWidth));
+  }, [envKeyWidth]);
   const [isSending, setIsSending] = useState(false);
   const [importError, setImportError] = useState("");
 
