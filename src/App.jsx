@@ -448,18 +448,25 @@ function App() {
   const [activeEnvId, setActiveEnvId] = useState("");
   const [activeRequestId, setActiveRequestId] = useState("");
   const [expandedFolders, setExpandedFolders] = useState({});
+  const [activeFolderId, setActiveFolderId] = useState("");
+  const [draftParentId, setDraftParentId] = useState("");
   const [activeTab, setActiveTab] = useState("Params");
   const [scriptTab, setScriptTab] = useState("Pre");
   const [response, setResponse] = useState(null);
   const [testResults, setTestResults] = useState([]);
   const [runs, setRuns] = useState([]);
   const [isDirty, setIsDirty] = useState(false);
+  const [sidebarTab, setSidebarTab] = useState("collections");
+  const [editingFolderId, setEditingFolderId] = useState("");
+  const [editingFolderName, setEditingFolderName] = useState("");
   const [createMenuOpen, setCreateMenuOpen] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState({
     open: false,
     id: "",
     name: "",
   });
+  const [envEditorId, setEnvEditorId] = useState("");
+  const [envEditorRows, setEnvEditorRows] = useState([createKeyValueRow()]);
   const [bulkEdit, setBulkEdit] = useState({
     params: { open: false, text: "" },
     headers: { open: false, text: "" },
@@ -620,6 +627,17 @@ function App() {
       const parsed = parseEnvironment(data);
       setEnvironments((current) => [...current, parsed]);
       setActiveEnvId(parsed.id);
+      setEnvEditorId(parsed.id);
+      setEnvEditorRows(
+        ensureAtLeastOneRow(
+          normalizeRows(
+            Object.entries(parsed.values ?? {}).map(([key, value]) => ({
+              key,
+              value,
+            })),
+          ),
+        ),
+      );
       setImportError("");
     } catch (error) {
       setImportError("Falha ao importar environment.");
@@ -639,6 +657,7 @@ function App() {
       scripts: item.scripts ?? { pre: "", tests: "" },
     });
     setIsDirty(false);
+    setDraftParentId("");
     setResponse(null);
     setTestResults([]);
   };
@@ -647,6 +666,7 @@ function App() {
     setActiveRequestId("");
     setRequestDraft(createEmptyDraft());
     setIsDirty(false);
+    setDraftParentId(activeFolderId || "");
     setResponse(null);
     setTestResults([]);
   };
@@ -700,6 +720,120 @@ function App() {
         [folderId]: true,
       }));
     }
+  };
+
+  const selectFolder = (folderId) => {
+    setActiveFolderId(folderId);
+    setActiveRequestId("");
+  };
+
+  const startEditFolder = (folder) => {
+    setEditingFolderId(folder.id);
+    setEditingFolderName(folder.name);
+  };
+
+  const commitEditFolder = () => {
+    const name = editingFolderName.trim();
+    if (!editingFolderId || !name) {
+      setEditingFolderId("");
+      setEditingFolderName("");
+      return;
+    }
+    setCollections((current) => {
+      const updateItems = (items) =>
+        items.map((item) => {
+          if (item.type === "folder" && item.id === editingFolderId) {
+            return { ...item, name };
+          }
+          if (item.type === "folder") {
+            return {
+              ...item,
+              children: updateItems(item.children ?? []),
+            };
+          }
+          return item;
+        });
+      return current.map((collection) => ({
+        ...collection,
+        items: updateItems(collection.items ?? []),
+      }));
+    });
+    setEditingFolderId("");
+    setEditingFolderName("");
+  };
+
+  const mapEnvRowsToValues = (rows) => {
+    const values = {};
+    compactRows(normalizeRows(rows)).forEach((row) => {
+      if (row.key) {
+        values[row.key] = row.value ?? "";
+      }
+    });
+    return values;
+  };
+
+  const selectEnvironmentForEdit = (env) => {
+    setEnvEditorId(env.id);
+    setEnvEditorRows(
+      ensureAtLeastOneRow(
+        normalizeRows(
+          Object.entries(env.values ?? {}).map(([key, value]) => ({
+            key,
+            value,
+          })),
+        ),
+      ),
+    );
+  };
+
+  const updateEnvironmentValues = (rows) => {
+    if (!envEditorId) return;
+    const values = mapEnvRowsToValues(rows);
+    setEnvironments((current) =>
+      current.map((env) =>
+        env.id === envEditorId ? { ...env, values } : env,
+      ),
+    );
+  };
+
+  const updateEnvRow = (index, field, value) => {
+    setEnvEditorRows((current) => {
+      const next = current.map((row, rowIndex) => {
+        if (rowIndex !== index) return row;
+        return { ...row, [field]: value };
+      });
+      const normalized = normalizeRows(next);
+      updateEnvironmentValues(normalized);
+      return normalized;
+    });
+  };
+
+  const handleEnvRowKeyDown = (event, index, field) => {
+    if (event.key !== "Enter" && event.key !== "ArrowDown") return;
+    event.preventDefault();
+    setEnvEditorRows((current) => {
+      if (index >= current.length - 1) {
+        const nextRows = normalizeRows([...current, createKeyValueRow()]);
+        updateEnvironmentValues(nextRows);
+        return nextRows;
+      }
+      return current;
+    });
+    const nextIndex = index + 1;
+    setTimeout(() => {
+      const selector = `[data-env-index="${nextIndex}"][data-env-field="${field}"]`;
+      const target = document.querySelector(selector);
+      if (target) target.focus();
+    }, 0);
+  };
+
+  const removeEnvRow = (index) => {
+    setEnvEditorRows((current) => {
+      const rows = current.filter((_, rowIndex) => rowIndex !== index);
+      const nextRows = ensureAtLeastOneRow(normalizeRows(rows));
+      updateEnvironmentValues(nextRows);
+      return nextRows;
+    });
   };
 
   const removeRequestById = (items, id) =>
@@ -785,6 +919,36 @@ function App() {
         }));
       }
 
+      if (draftParentId) {
+        const insertIntoFolder = (items) =>
+          items.map((item) => {
+            if (item.type === "folder" && item.id === draftParentId) {
+              return {
+                ...item,
+                children: [
+                  ...(item.children ?? []),
+                  {
+                    id: newRequestId,
+                    type: "request",
+                    ...payload,
+                  },
+                ],
+              };
+            }
+            if (item.type === "folder") {
+              return {
+                ...item,
+                children: insertIntoFolder(item.children ?? []),
+              };
+            }
+            return item;
+          });
+        return current.map((collection) => ({
+          ...collection,
+          items: insertIntoFolder(collection.items ?? []),
+        }));
+      }
+
       const localIndex = current.findIndex(
         (collection) => collection.name === "Local",
       );
@@ -818,6 +982,7 @@ function App() {
 
     setActiveRequestId(newRequestId);
     setIsDirty(false);
+    setDraftParentId("");
   };
 
   const recordRun = (payload) => {
@@ -978,17 +1143,50 @@ function App() {
         const isOpen = expandedFolders[item.id] ?? false;
         return (
           <div key={item.id} className="collection-folder">
-            <button
-              type="button"
-              className="folder-label"
+            <div
+              className={`folder-row ${
+                activeFolderId === item.id ? "active" : ""
+              }`}
               style={{ paddingLeft: 12 + depth * 12 }}
-              onClick={() => toggleFolder(item.id)}
             >
-              <span className={`folder-caret ${isOpen ? "open" : ""}`}>
+              <button
+                type="button"
+                className={`folder-caret ${isOpen ? "open" : ""}`}
+                onClick={() => toggleFolder(item.id)}
+                aria-label="Expandir pasta"
+              >
                 ▶
-              </span>
-              <span>{item.name}</span>
-            </button>
+              </button>
+              {editingFolderId === item.id ? (
+                <input
+                  className="folder-input"
+                  value={editingFolderName}
+                  onChange={(event) =>
+                    setEditingFolderName(event.target.value)
+                  }
+                  onBlur={commitEditFolder}
+                  onKeyDown={(event) => {
+                    if (event.key === "Enter") {
+                      commitEditFolder();
+                    }
+                    if (event.key === "Escape") {
+                      setEditingFolderId("");
+                      setEditingFolderName("");
+                    }
+                  }}
+                  autoFocus
+                />
+              ) : (
+                <button
+                  type="button"
+                  className="folder-name"
+                  onClick={() => selectFolder(item.id)}
+                  onDoubleClick={() => startEditFolder(item)}
+                >
+                  {item.name}
+                </button>
+              )}
+            </div>
             {isOpen ? (
               <div className="folder-children">
                 {renderCollectionItems(item.children ?? [], depth + 1)}
@@ -1105,20 +1303,116 @@ function App() {
           </div>
         </div>
         {importError ? <div className="import-error">{importError}</div> : null}
-        <div className="collection-list">
-          {collections.length === 0 ? (
-            <div className="empty-hint">
-              Importe uma collection do Postman para comecar.
-            </div>
-          ) : (
-            collections.map((collection) => (
-              <div key={collection.id} className="collection-block">
-                <div className="collection-title">{collection.name}</div>
-                {renderCollectionItems(collection.items)}
-              </div>
-            ))
-          )}
+        <div className="sidebar-tabs">
+          <button
+            type="button"
+            className={sidebarTab === "collections" ? "active" : ""}
+            onClick={() => setSidebarTab("collections")}
+          >
+            Collections
+          </button>
+          <button
+            type="button"
+            className={sidebarTab === "environments" ? "active" : ""}
+            onClick={() => setSidebarTab("environments")}
+          >
+            Environments
+          </button>
         </div>
+        {sidebarTab === "collections" ? (
+          <div className="collection-list">
+            {collections.length === 0 ? (
+              <div className="empty-hint">
+                Importe uma collection do Postman para comecar.
+              </div>
+            ) : (
+              collections.map((collection) => (
+                <div key={collection.id} className="collection-block">
+                  <div className="collection-title">{collection.name}</div>
+                  {renderCollectionItems(collection.items)}
+                </div>
+              ))
+            )}
+          </div>
+        ) : (
+          <div className="env-panel">
+            <div className="env-list">
+              {environments.length === 0 ? (
+                <div className="empty-hint">
+                  Importe environments para editar.
+                </div>
+              ) : (
+                environments.map((env) => (
+                  <button
+                    key={env.id}
+                    type="button"
+                    className={`env-item ${
+                      envEditorId === env.id ? "active" : ""
+                    }`}
+                    onClick={() => selectEnvironmentForEdit(env)}
+                  >
+                    {env.name}
+                  </button>
+                ))
+              )}
+            </div>
+            {envEditorId ? (
+              <div className="env-editor">
+                <div className="table-header">Variaveis</div>
+                <div className="postman-grid">
+                  <div className="table-header-row env-header">
+                    <div className="postman-cell">Key</div>
+                    <div className="postman-cell">Value</div>
+                    <div className="postman-cell bulk-cell" />
+                  </div>
+                  {envEditorRows.map((row, index) => (
+                    <div key={`env-${index}`} className="postman-row env-row">
+                      <div className="postman-cell">
+                        <input
+                          value={row.key}
+                          placeholder="Key"
+                          onChange={(event) =>
+                            updateEnvRow(index, "key", event.target.value)
+                          }
+                          onKeyDown={(event) =>
+                            handleEnvRowKeyDown(event, index, "key")
+                          }
+                          data-env-index={index}
+                          data-env-field="key"
+                        />
+                      </div>
+                      <div className="postman-cell">
+                        <input
+                          value={row.value}
+                          placeholder="Value"
+                          onChange={(event) =>
+                            updateEnvRow(index, "value", event.target.value)
+                          }
+                          onKeyDown={(event) =>
+                            handleEnvRowKeyDown(event, index, "value")
+                          }
+                          data-env-index={index}
+                          data-env-field="value"
+                        />
+                      </div>
+                      <div className="postman-cell bulk-cell">
+                        <button
+                          type="button"
+                          className="row-delete"
+                          onClick={() => removeEnvRow(index)}
+                          disabled={
+                            envEditorRows.length === 1 && isRowEmpty(row)
+                          }
+                          aria-label="Excluir linha"
+                        />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ) : null}
+          </div>
+        )}
       </aside>
 
       <section className="main">
@@ -1368,7 +1662,7 @@ function App() {
                 <div className="postman-grid">
                   <div className="table-header-row">
                     <div className="postman-cell checkbox-cell" />
-                    <div className="postman-cell">Key</div>
+                    <div className="postman-cell">Header</div>
                     <div className="postman-cell">Value</div>
                     <div className="postman-cell">Description</div>
                     <div className="postman-cell bulk-cell">

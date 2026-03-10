@@ -135,8 +135,7 @@ textarea {
   letter-spacing: 0.04em;
 }
 
-.collection-item,
-.folder-label {
+.collection-item {
   width: 100%;
   border: none;
   background: transparent;
@@ -162,6 +161,69 @@ textarea {
 
 .collection-item-row .collection-item.active {
   background: #2a2a2a;
+}
+
+.sidebar-tabs {
+  display: flex;
+  gap: 6px;
+  padding: 0 12px 8px;
+}
+
+.sidebar-tabs button {
+  flex: 1;
+  border: 1px solid #2f2f2f;
+  background: #232323;
+  color: #c9cdd6;
+  padding: 6px 8px;
+  border-radius: 8px;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.sidebar-tabs button.active {
+  background: #2f6fed;
+  border-color: #2f6fed;
+  color: #fff;
+}
+
+.env-panel {
+  padding: 0 8px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.env-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.env-item {
+  border: 1px solid #2f2f2f;
+  background: #232323;
+  color: #e6e6e6;
+  padding: 6px 10px;
+  border-radius: 8px;
+  text-align: left;
+  cursor: pointer;
+  font-size: 12px;
+}
+
+.env-item.active {
+  background: #2a2a2a;
+}
+
+.env-editor .postman-grid {
+  border-radius: 6px;
+}
+
+.env-header {
+  grid-template-columns: 1fr 1fr 40px;
+}
+
+.env-row {
+  grid-template-columns: 1fr 1fr 40px;
 }
 
 .item-delete {
@@ -191,14 +253,21 @@ textarea {
   background: #2a2a2a;
 }
 
-.folder-label {
-  font-weight: 600;
-  color: #9aa0aa;
-  cursor: default;
+.folder-row {
+  display: flex;
+  align-items: center;
   gap: 6px;
+  padding: 6px 8px;
+  border-radius: 8px;
+}
+
+.folder-row.active {
+  background: #2a2a2a;
 }
 
 .folder-caret {
+  border: none;
+  background: transparent;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -207,10 +276,29 @@ textarea {
   height: 14px;
   transition: transform 0.15s ease;
   color: #c5c9d1;
+  cursor: pointer;
 }
 
 .folder-caret.open {
   transform: rotate(90deg);
+}
+
+.folder-name {
+  border: none;
+  background: transparent;
+  color: #9aa0aa;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 4px 2px;
+}
+
+.folder-input {
+  border: 1px solid #2f2f2f;
+  background: #232323;
+  color: #e6e6e6;
+  padding: 4px 6px;
+  border-radius: 6px;
+  font-size: 12px;
 }
 
 .folder-children {
