@@ -39,6 +39,36 @@ const normalizeRows = (rows) => {
   return trimmed;
 };
 
+const buildBulkText = (rows) =>
+  rows
+    .filter((row) => row.key)
+    .map((row) => `${row.key}: ${row.value ?? ""}`)
+    .join("\n");
+
+const parseBulkText = (text) => {
+  const lines = String(text ?? "")
+    .split(/\r?\n/)
+    .map((line) => line.trim())
+    .filter(Boolean);
+
+  const rows = lines.map((line) => {
+    let key = line;
+    let value = "";
+    if (line.includes(":")) {
+      const parts = line.split(":");
+      key = parts.shift()?.trim() ?? "";
+      value = parts.join(":").trim();
+    } else if (line.includes("=")) {
+      const parts = line.split("=");
+      key = parts.shift()?.trim() ?? "";
+      value = parts.join("=").trim();
+    }
+    return createKeyValueRow({ key, value });
+  });
+
+  return normalizeRows(rows);
+};
+
 const escapeHtml = (value) =>
   String(value ?? "")
     .replaceAll("&", "&amp;")
@@ -399,6 +429,10 @@ function App() {
   const [response, setResponse] = useState(null);
   const [testResults, setTestResults] = useState([]);
   const [runs, setRuns] = useState([]);
+  const [bulkEdit, setBulkEdit] = useState({
+    params: { open: false, text: "" },
+    headers: { open: false, text: "" },
+  });
   const [isSending, setIsSending] = useState(false);
   const [importError, setImportError] = useState("");
 
@@ -450,6 +484,62 @@ function App() {
       });
       return { ...current, [section]: normalizeRows(next) };
     });
+  };
+
+  const focusCell = (section, index, field) => {
+    const selector = `[data-section="${section}"][data-index="${index}"][data-field="${field}"]`;
+    const target = document.querySelector(selector);
+    if (target) {
+      target.focus();
+    }
+  };
+
+  const handleRowKeyDown = (event, section, index, field) => {
+    if (event.key !== "Enter" && event.key !== "ArrowDown") return;
+    event.preventDefault();
+
+    setRequestDraft((current) => {
+      const rows = current[section];
+      if (index >= rows.length - 1) {
+        const nextRows = normalizeRows([...rows, createKeyValueRow()]);
+        return { ...current, [section]: nextRows };
+      }
+      return current;
+    });
+
+    const nextIndex = index + 1;
+    setTimeout(() => {
+      focusCell(section, nextIndex, field);
+    }, 0);
+  };
+
+  const toggleBulkEdit = (section) => {
+    setBulkEdit((current) => {
+      const isOpen = !current[section].open;
+      return {
+        ...current,
+        [section]: {
+          open: isOpen,
+          text: isOpen ? buildBulkText(requestDraft[section]) : "",
+        },
+      };
+    });
+  };
+
+  const updateBulkText = (section, text) => {
+    setBulkEdit((current) => ({
+      ...current,
+      [section]: { ...current[section], text },
+    }));
+  };
+
+  const applyBulkEdit = (section) => {
+    const rows = parseBulkText(bulkEdit[section].text);
+    setRequestDraft((current) => ({ ...current, [section]: rows }));
+    setBulkEdit((current) => ({
+      ...current,
+      [section]: { open: false, text: "" },
+    }));
   };
 
   const handleImportCollection = async (event) => {
@@ -819,11 +909,42 @@ function App() {
                     <div className="postman-cell">Value</div>
                     <div className="postman-cell">Description</div>
                     <div className="postman-cell bulk-cell">
-                      <button type="button" className="bulk-button">
+                      <button
+                        type="button"
+                        className="bulk-button"
+                        onClick={() => toggleBulkEdit("params")}
+                      >
                         Bulk Edit
                       </button>
                     </div>
                   </div>
+                  {bulkEdit.params.open ? (
+                    <div className="bulk-editor">
+                      <textarea
+                        value={bulkEdit.params.text}
+                        onChange={(event) =>
+                          updateBulkText("params", event.target.value)
+                        }
+                        placeholder="key: value"
+                      />
+                      <div className="bulk-actions">
+                        <button
+                          type="button"
+                          className="bulk-apply"
+                          onClick={() => applyBulkEdit("params")}
+                        >
+                          Aplicar
+                        </button>
+                        <button
+                          type="button"
+                          className="bulk-cancel"
+                          onClick={() => toggleBulkEdit("params")}
+                        >
+                          Cancelar
+                        </button>
+                      </div>
+                    </div>
+                  ) : null}
                   {requestDraft.params.map((param, index) => (
                     <div
                       key={`param-${index}`}
@@ -856,6 +977,12 @@ function App() {
                               event.target.value,
                             )
                           }
+                          onKeyDown={(event) =>
+                            handleRowKeyDown(event, "params", index, "key")
+                          }
+                          data-section="params"
+                          data-index={index}
+                          data-field="key"
                         />
                       </div>
                       <div className="postman-cell">
@@ -870,6 +997,12 @@ function App() {
                               event.target.value,
                             )
                           }
+                          onKeyDown={(event) =>
+                            handleRowKeyDown(event, "params", index, "value")
+                          }
+                          data-section="params"
+                          data-index={index}
+                          data-field="value"
                         />
                       </div>
                       <div className="postman-cell">
@@ -884,6 +1017,17 @@ function App() {
                               event.target.value,
                             )
                           }
+                          onKeyDown={(event) =>
+                            handleRowKeyDown(
+                              event,
+                              "params",
+                              index,
+                              "description",
+                            )
+                          }
+                          data-section="params"
+                          data-index={index}
+                          data-field="description"
                         />
                       </div>
                       <div className="postman-cell bulk-cell">
@@ -905,11 +1049,42 @@ function App() {
                     <div className="postman-cell">Value</div>
                     <div className="postman-cell">Description</div>
                     <div className="postman-cell bulk-cell">
-                      <button type="button" className="bulk-button">
+                      <button
+                        type="button"
+                        className="bulk-button"
+                        onClick={() => toggleBulkEdit("headers")}
+                      >
                         Bulk Edit
                       </button>
                     </div>
                   </div>
+                  {bulkEdit.headers.open ? (
+                    <div className="bulk-editor">
+                      <textarea
+                        value={bulkEdit.headers.text}
+                        onChange={(event) =>
+                          updateBulkText("headers", event.target.value)
+                        }
+                        placeholder="key: value"
+                      />
+                      <div className="bulk-actions">
+                        <button
+                          type="button"
+                          className="bulk-apply"
+                          onClick={() => applyBulkEdit("headers")}
+                        >
+                          Aplicar
+                        </button>
+                        <button
+                          type="button"
+                          className="bulk-cancel"
+                          onClick={() => toggleBulkEdit("headers")}
+                        >
+                          Cancelar
+                        </button>
+                      </div>
+                    </div>
+                  ) : null}
                   {requestDraft.headers.map((header, index) => (
                     <div
                       key={`header-${index}`}
@@ -942,6 +1117,12 @@ function App() {
                               event.target.value,
                             )
                           }
+                          onKeyDown={(event) =>
+                            handleRowKeyDown(event, "headers", index, "key")
+                          }
+                          data-section="headers"
+                          data-index={index}
+                          data-field="key"
                         />
                       </div>
                       <div className="postman-cell">
@@ -956,6 +1137,12 @@ function App() {
                               event.target.value,
                             )
                           }
+                          onKeyDown={(event) =>
+                            handleRowKeyDown(event, "headers", index, "value")
+                          }
+                          data-section="headers"
+                          data-index={index}
+                          data-field="value"
                         />
                       </div>
                       <div className="postman-cell">
@@ -970,6 +1157,17 @@ function App() {
                               event.target.value,
                             )
                           }
+                          onKeyDown={(event) =>
+                            handleRowKeyDown(
+                              event,
+                              "headers",
+                              index,
+                              "description",
+                            )
+                          }
+                          data-section="headers"
+                          data-index={index}
+                          data-field="description"
                         />
                       </div>
                       <div className="postman-cell bulk-cell">

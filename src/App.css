@@ -354,7 +354,7 @@ textarea {
   grid-template-columns: 28px 1.2fr 1fr 1fr 90px;
   align-items: center;
   padding: 0;
-  border-bottom: 1px solid #303030;
+  border-bottom: 1px solid #383838;
   background: #222222;
   color: #9aa0aa;
   font-size: 12px;
@@ -381,7 +381,7 @@ textarea {
   grid-template-columns: 28px 1.2fr 1fr 1fr 90px;
   align-items: center;
   padding: 0;
-  border-bottom: 1px solid #303030;
+  border-bottom: 1px solid #383838;
 }
 
 .postman-row input[type="checkbox"] {
@@ -393,7 +393,7 @@ textarea {
   display: flex;
   align-items: center;
   padding: 8px 10px;
-  border-right: 1px solid #303030;
+  border-right: 1px solid #383838;
   min-height: 34px;
 }
 
@@ -415,6 +415,53 @@ textarea {
   color: #e6e6e6;
   outline: none;
   width: 100%;
+}
+
+.bulk-editor {
+  border-bottom: 1px solid #383838;
+  padding: 10px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  background: #1e1e1e;
+}
+
+.bulk-editor textarea {
+  width: 100%;
+  min-height: 120px;
+  border-radius: 10px;
+  border: 1px solid #2f2f2f;
+  background: #1b1b1b;
+  color: #e6e6e6;
+  padding: 10px;
+  font-family: "JetBrains Mono", "SFMono-Regular", monospace;
+  font-size: 12px;
+}
+
+.bulk-actions {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
+.bulk-apply {
+  border: none;
+  background: #2f6fed;
+  color: #fff;
+  padding: 6px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 12px;
+}
+
+.bulk-cancel {
+  border: 1px solid #2f2f2f;
+  background: #232323;
+  color: #e6e6e6;
+  padding: 6px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 12px;
 }
 
 .postman-row input:not([type="checkbox"]):focus {
