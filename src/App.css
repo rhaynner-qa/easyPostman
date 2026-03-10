@@ -42,6 +42,17 @@ textarea {
   flex-direction: column;
   border-right: 1px solid #2a2a2a;
   background: #1b1b1b;
+  position: relative;
+}
+
+.sidebar-resizer {
+  width: 6px;
+  cursor: col-resize;
+  background: transparent;
+}
+
+.sidebar-resizer:hover {
+  background: rgba(255, 255, 255, 0.05);
 }
 
 .sidebar-header {

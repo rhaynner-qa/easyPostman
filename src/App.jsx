@@ -459,6 +459,7 @@ function App() {
   const [runs, setRuns] = useState([]);
   const [isDirty, setIsDirty] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
+  const [sidebarWidth, setSidebarWidth] = useState(280);
   const [sidebarTab, setSidebarTab] = useState("collections");
   const [editingFolderId, setEditingFolderId] = useState("");
   const [editingFolderName, setEditingFolderName] = useState("");
@@ -494,6 +495,10 @@ function App() {
     if (headersStored && !Number.isNaN(headersStored)) {
       setHeadersKeyWidth(headersStored);
     }
+    const sidebarStored = Number(localStorage.getItem("sidebarWidth"));
+    if (sidebarStored && !Number.isNaN(sidebarStored)) {
+      setSidebarWidth(sidebarStored);
+    }
   }, []);
 
   useEffect(() => {
@@ -507,6 +512,10 @@ function App() {
   useEffect(() => {
     localStorage.setItem("headersKeyWidth", String(headersKeyWidth));
   }, [headersKeyWidth]);
+
+  useEffect(() => {
+    localStorage.setItem("sidebarWidth", String(sidebarWidth));
+  }, [sidebarWidth]);
   const [isSending, setIsSending] = useState(false);
   const [importError, setImportError] = useState("");
 
@@ -988,6 +997,28 @@ function App() {
     window.addEventListener("mouseup", handleUp);
   };
 
+  const startSidebarResize = (event) => {
+    event.preventDefault();
+    const startX = event.clientX;
+    const startWidth = sidebarWidth;
+    const min = 220;
+    const max = 420;
+
+    const handleMove = (moveEvent) => {
+      const delta = moveEvent.clientX - startX;
+      const next = Math.min(max, Math.max(min, startWidth + delta));
+      setSidebarWidth(next);
+    };
+
+    const handleUp = () => {
+      window.removeEventListener("mousemove", handleMove);
+      window.removeEventListener("mouseup", handleUp);
+    };
+
+    window.addEventListener("mousemove", handleMove);
+    window.addEventListener("mouseup", handleUp);
+  };
+
   const removeRequestById = (items, id) =>
     items
       .filter((item) => !(item.type === "request" && item.id === id))
@@ -1447,7 +1478,7 @@ function App() {
 
   return (
     <div className="app-shell">
-      <aside className="sidebar">
+      <aside className="sidebar" style={{ width: sidebarWidth }}>
         <div className="sidebar-header">
           <div>
             <div className="app-name">easyPostman</div>
@@ -1663,6 +1694,7 @@ function App() {
           </div>
         )}
       </aside>
+      <div className="sidebar-resizer" onMouseDown={startSidebarResize} />
 
       <section className="main">
         <header className="topbar">
