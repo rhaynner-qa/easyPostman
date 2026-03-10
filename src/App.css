@@ -218,7 +218,7 @@ textarea {
   display: flex;
   flex-direction: column;
   gap: 16px;
-  padding: 16px 18px;
+  padding: 22px 18px 16px;
   overflow: auto;
 }
 
@@ -228,6 +228,10 @@ textarea {
   border-radius: 14px;
   border: 1px solid #2b2b2b;
   padding: 16px;
+}
+
+.request-panel {
+  margin-top: 4px;
 }
 
 .request-title {
