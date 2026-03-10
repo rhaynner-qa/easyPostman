@@ -1,10 +1,10 @@
 :root {
   font-family: "IBM Plex Sans", "Segoe UI", "Helvetica Neue", sans-serif;
-  font-size: 14px;
-  line-height: 1.4;
+  font-size: 13px;
+  line-height: 1.45;
   font-weight: 400;
-  color: #1a1f2b;
-  background-color: #e9edf2;
+  color: #e6e6e6;
+  background-color: #1e1e1e;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
 }
@@ -15,7 +15,7 @@
 
 body {
   margin: 0;
-  background: radial-gradient(circle at top, #f7f8fa 0%, #e9edf2 55%, #dfe5ec 100%);
+  background: #1e1e1e;
 }
 
 #root {
@@ -33,35 +33,35 @@ textarea {
 .app-shell {
   display: flex;
   height: 100vh;
-  background: transparent;
+  background: #1e1e1e;
 }
 
 .sidebar {
   width: 280px;
   display: flex;
   flex-direction: column;
-  border-right: 1px solid #d7dde6;
-  background: linear-gradient(180deg, #f4f6fa 0%, #eef2f7 100%);
+  border-right: 1px solid #2a2a2a;
+  background: #1b1b1b;
 }
 
 .sidebar-header {
-  padding: 20px 18px 12px;
+  padding: 18px 16px 12px;
   display: grid;
   gap: 10px;
 }
 
 .app-name {
-  font-size: 18px;
+  font-size: 16px;
   font-weight: 600;
 }
 
 .app-subtitle {
-  color: #5b667a;
-  font-size: 12px;
+  color: #9aa0aa;
+  font-size: 11px;
 }
 
 .import-button {
-  background: #ff6c37;
+  background: #2f6fed;
   color: #fff;
   border: none;
   padding: 8px 12px;
@@ -72,15 +72,15 @@ textarea {
 }
 
 .import-button.ghost {
-  background: #eef2f7;
-  color: #2a3242;
-  border: 1px solid #d0d6e0;
+  background: #232323;
+  color: #e6e6e6;
+  border: 1px solid #2f2f2f;
 }
 
 .import-error {
-  color: #b42318;
+  color: #f97066;
   font-size: 12px;
-  padding: 0 18px 8px;
+  padding: 0 16px 8px;
 }
 
 .collection-list {
@@ -94,9 +94,9 @@ textarea {
 
 .collection-title {
   padding: 6px 12px;
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 600;
-  color: #4a5568;
+  color: #a7a7a7;
   text-transform: uppercase;
   letter-spacing: 0.04em;
 }
@@ -112,22 +112,21 @@ textarea {
   align-items: center;
   gap: 8px;
   cursor: pointer;
-  color: #2c3444;
+  color: #d8d8d8;
   border-radius: 8px;
 }
 
 .collection-item:hover {
-  background: #e7ebf2;
+  background: #242424;
 }
 
 .collection-item.active {
-  background: #fff;
-  border: 1px solid #dde3ec;
+  background: #2a2a2a;
 }
 
 .folder-label {
   font-weight: 600;
-  color: #5b667a;
+  color: #9aa0aa;
   cursor: default;
 }
 
@@ -136,44 +135,44 @@ textarea {
   font-weight: 700;
   padding: 2px 6px;
   border-radius: 999px;
-  background: #e9edf2;
-  color: #2f3a4f;
+  background: #2a2a2a;
+  color: #d8d8d8;
   min-width: 42px;
   text-align: center;
 }
 
 .method-GET {
-  background: #e3f2ff;
-  color: #0b5cad;
+  background: #1b3a5d;
+  color: #7cc5ff;
 }
 
 .method-POST {
-  background: #e7f8ef;
-  color: #146b3a;
+  background: #1c3b2d;
+  color: #7ee2a8;
 }
 
 .method-PUT {
-  background: #fff4e5;
-  color: #8a4b0f;
+  background: #3a2b16;
+  color: #f5b26b;
 }
 
 .method-PATCH {
-  background: #f7e8ff;
-  color: #6a1b9a;
+  background: #31173c;
+  color: #e4a6ff;
 }
 
 .method-DELETE {
-  background: #ffe6e6;
-  color: #b42318;
+  background: #3b181b;
+  color: #ff9c9c;
 }
 
 .item-name {
-  font-size: 13px;
+  font-size: 12px;
 }
 
 .empty-hint {
   font-size: 12px;
-  color: #7a8599;
+  color: #8d93a1;
   padding: 12px;
 }
 
@@ -185,38 +184,33 @@ textarea {
 }
 
 .topbar {
-  height: 60px;
-  padding: 0 20px;
+  height: 56px;
+  padding: 0 18px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  border-bottom: 1px solid #d7dde6;
-  background: #ffffff;
+  border-bottom: 1px solid #2a2a2a;
+  background: #1e1e1e;
 }
 
 .workspace-title {
   font-weight: 600;
-  font-size: 14px;
-}
-
-.workspace-meta {
-  font-size: 12px;
-  color: #7a8599;
+  font-size: 13px;
 }
 
 .env-select {
   display: flex;
   align-items: center;
   gap: 8px;
-  font-size: 12px;
-  color: #5b667a;
+  font-size: 11px;
+  color: #9aa0aa;
 }
 
 .env-select select {
   padding: 6px 10px;
   border-radius: 8px;
-  border: 1px solid #d0d6e0;
-  background: #f7f9fc;
+  border: 1px solid #2f2f2f;
+  background: #232323;
 }
 
 .content {
@@ -224,16 +218,15 @@ textarea {
   display: flex;
   flex-direction: column;
   gap: 16px;
-  padding: 18px 20px;
+  padding: 16px 18px;
   overflow: auto;
 }
 
 .request-panel,
 .response-panel {
-  background: #ffffff;
-  border-radius: 16px;
-  border: 1px solid #dfe5ee;
-  box-shadow: 0 12px 24px rgba(15, 23, 42, 0.06);
+  background: #202020;
+  border-radius: 14px;
+  border: 1px solid #2b2b2b;
   padding: 16px;
 }
 
@@ -247,16 +240,17 @@ textarea {
 
 .request-title input {
   border: none;
-  font-size: 16px;
+  font-size: 15px;
   font-weight: 600;
   background: transparent;
   outline: none;
   flex: 1;
+  color: #f2f2f2;
 }
 
 .request-note {
-  font-size: 12px;
-  color: #7a8599;
+  font-size: 11px;
+  color: #8d93a1;
 }
 
 .request-line {
@@ -269,9 +263,9 @@ textarea {
 .method-select {
   padding: 10px 12px;
   border-radius: 10px;
-  border: 1px solid #d0d6e0;
-  background: #f7f9fc;
-  min-width: 110px;
+  border: 1px solid #2f2f2f;
+  background: #232323;
+  min-width: 100px;
   font-weight: 600;
 }
 
@@ -279,15 +273,15 @@ textarea {
   flex: 1;
   padding: 10px 12px;
   border-radius: 10px;
-  border: 1px solid #d0d6e0;
-  background: #f7f9fc;
+  border: 1px solid #2f2f2f;
+  background: #232323;
 }
 
 .send-button {
   padding: 10px 18px;
   border-radius: 10px;
   border: none;
-  background: #ff6c37;
+  background: #2f6fed;
   color: #fff;
   font-weight: 600;
   cursor: pointer;
@@ -302,11 +296,12 @@ textarea {
   display: flex;
   gap: 8px;
   margin-bottom: 12px;
+  flex-wrap: wrap;
 }
 
 .tab-button {
-  border: 1px solid #d0d6e0;
-  background: #f7f9fc;
+  border: 1px solid #2f2f2f;
+  background: #232323;
   padding: 6px 12px;
   border-radius: 999px;
   font-size: 12px;
@@ -314,9 +309,9 @@ textarea {
 }
 
 .tab-button.active {
-  background: #2a3242;
+  background: #2f6fed;
   color: #fff;
-  border-color: #2a3242;
+  border-color: #2f6fed;
 }
 
 .table-grid {
@@ -325,49 +320,79 @@ textarea {
   gap: 10px;
 }
 
+.postman-grid {
+  border: 1px solid #2f2f2f;
+  border-radius: 12px;
+  overflow: hidden;
+  gap: 0;
+  background: #1e1e1e;
+}
+
 .table-header {
   font-size: 12px;
-  color: #5b667a;
+  color: #a7a7a7;
   text-transform: uppercase;
   letter-spacing: 0.04em;
+  padding: 10px 12px 0;
 }
 
-.table-row {
+.table-header-row {
   display: grid;
-  grid-template-columns: 1fr 1fr auto;
+  grid-template-columns: 28px 1.2fr 1fr 1fr 90px;
   gap: 8px;
   align-items: center;
-}
-
-.table-row.compact {
-  grid-template-columns: 1fr 2fr;
-  padding: 6px 0;
-}
-
-.table-row input {
-  padding: 8px 10px;
-  border-radius: 8px;
-  border: 1px solid #d0d6e0;
-  background: #f7f9fc;
-}
-
-.row-action {
-  border: 1px solid #d0d6e0;
-  background: #fff;
-  padding: 6px 10px;
-  border-radius: 8px;
-  cursor: pointer;
+  padding: 8px 12px;
+  border-top: 1px solid #2f2f2f;
+  background: #222222;
+  color: #9aa0aa;
   font-size: 12px;
 }
 
-.add-row {
-  align-self: flex-start;
+.bulk-button {
+  justify-self: end;
+  border: 1px solid #2f2f2f;
+  background: #1e1e1e;
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-size: 11px;
+  cursor: pointer;
+  color: #b4b9c2;
+}
+
+.bulk-placeholder {
+  justify-self: end;
+  width: 90px;
+}
+
+.postman-row {
+  display: grid;
+  grid-template-columns: 28px 1.2fr 1fr 1fr 90px;
+  gap: 8px;
+  align-items: center;
+  padding: 8px 12px;
+  border-top: 1px solid #2a2a2a;
+}
+
+.postman-row input[type="checkbox"] {
+  width: 14px;
+  height: 14px;
+}
+
+.postman-row input:not([type="checkbox"]) {
+  background: transparent;
   border: none;
-  background: #e7ebf2;
-  padding: 6px 12px;
-  border-radius: 8px;
-  font-size: 12px;
-  cursor: pointer;
+  padding: 6px 4px;
+  border-radius: 6px;
+  color: #e6e6e6;
+  outline: none;
+}
+
+.postman-row input:not([type="checkbox"]):focus {
+  background: #262626;
+}
+
+.postman-row.disabled {
+  opacity: 0.5;
 }
 
 .body-editor textarea,
@@ -375,17 +400,18 @@ textarea {
   width: 100%;
   min-height: 160px;
   border-radius: 12px;
-  border: 1px solid #d0d6e0;
+  border: 1px solid #2f2f2f;
   padding: 12px;
-  background: #f7f9fc;
+  background: #1e1e1e;
   resize: vertical;
   font-family: "JetBrains Mono", "SFMono-Regular", monospace;
   font-size: 12px;
+  color: #e6e6e6;
 }
 
 .body-header {
   font-size: 12px;
-  color: #5b667a;
+  color: #9aa0aa;
   margin-bottom: 6px;
 }
 
@@ -401,8 +427,8 @@ textarea {
 }
 
 .script-tabs button {
-  border: 1px solid #d0d6e0;
-  background: #f7f9fc;
+  border: 1px solid #2f2f2f;
+  background: #232323;
   padding: 6px 10px;
   border-radius: 999px;
   font-size: 12px;
@@ -410,9 +436,9 @@ textarea {
 }
 
 .script-tabs button.active {
-  background: #2a3242;
+  background: #2f6fed;
   color: #fff;
-  border-color: #2a3242;
+  border-color: #2f6fed;
 }
 
 .response-panel {
@@ -425,6 +451,8 @@ textarea {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
 }
 
 .response-title {
@@ -435,12 +463,13 @@ textarea {
   display: flex;
   gap: 12px;
   font-size: 12px;
-  color: #5b667a;
+  color: #9aa0aa;
+  align-items: center;
 }
 
 .report-button {
-  border: 1px solid #d0d6e0;
-  background: #fff;
+  border: 1px solid #2f2f2f;
+  background: #232323;
   padding: 6px 10px;
   border-radius: 999px;
   font-size: 12px;
@@ -453,12 +482,12 @@ textarea {
 }
 
 .response-body {
-  background: #f7f9fc;
+  background: #1b1b1b;
   border-radius: 12px;
   padding: 12px;
   min-height: 160px;
   overflow: auto;
-  border: 1px solid #e1e7ef;
+  border: 1px solid #2a2a2a;
 }
 
 .response-body pre {
@@ -466,39 +495,48 @@ textarea {
   font-family: "JetBrains Mono", "SFMono-Regular", monospace;
   font-size: 12px;
   white-space: pre-wrap;
+  color: #e6e6e6;
 }
 
-.response-headers {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
-
+.response-headers,
 .tests-panel {
   display: flex;
   flex-direction: column;
   gap: 6px;
 }
 
+.table-row {
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  gap: 8px;
+  font-size: 12px;
+  padding: 6px 0;
+  border-bottom: 1px solid #2a2a2a;
+}
+
+.table-row.compact {
+  grid-template-columns: 1fr 2fr;
+}
+
 .test-row {
   display: grid;
-  grid-template-columns: 80px 1fr;
+  grid-template-columns: 70px 1fr;
   gap: 10px;
   font-size: 12px;
 }
 
 .test-row .pass {
-  color: #15803d;
+  color: #7ee2a8;
   font-weight: 600;
 }
 
 .test-row .fail {
-  color: #b42318;
+  color: #ff9c9c;
   font-weight: 600;
 }
 
 .test-error {
-  color: #b42318;
+  color: #ff9c9c;
   grid-column: span 2;
 }
 
@@ -508,6 +546,6 @@ textarea {
   }
 
   .content {
-    padding: 16px;
+    padding: 12px;
   }
 }

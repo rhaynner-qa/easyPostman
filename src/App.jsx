@@ -11,6 +11,34 @@ const createId = () => {
   return `${Date.now()}-${Math.random().toString(16).slice(2)}`;
 };
 
+const createKeyValueRow = (overrides = {}) => ({
+  key: "",
+  value: "",
+  description: "",
+  enabled: true,
+  ...overrides,
+});
+
+const isRowEmpty = (row) =>
+  !row?.key && !row?.value && !row?.description;
+
+const normalizeRows = (rows) => {
+  const list = Array.isArray(rows) ? rows.filter(Boolean) : [];
+  const normalized = list.map((row) => ({
+    ...createKeyValueRow(),
+    ...row,
+    enabled: row?.enabled !== false,
+    description: row?.description ?? "",
+  }));
+  const trimmed = normalized.filter(
+    (row, index) => !isRowEmpty(row) || index === list.length - 1,
+  );
+  if (!trimmed.length || !isRowEmpty(trimmed[trimmed.length - 1])) {
+    return [...trimmed, createKeyValueRow()];
+  }
+  return trimmed;
+};
+
 const escapeHtml = (value) =>
   String(value ?? "")
     .replaceAll("&", "&amp;")
@@ -159,6 +187,9 @@ const extractQueryParams = (rawUrl, urlObject) => {
       params.push({
         key: item.key ?? "",
         value: item.value ?? "",
+        description:
+          typeof item.description === "string" ? item.description : "",
+        enabled: !item.disabled,
       });
     });
   }
@@ -166,23 +197,28 @@ const extractQueryParams = (rawUrl, urlObject) => {
     try {
       const parsed = new URL(rawUrl);
       parsed.searchParams.forEach((value, key) => {
-        params.push({ key, value });
+        params.push(createKeyValueRow({ key, value }));
       });
     } catch {
       return params;
     }
   }
-  return params.length ? params : [{ key: "", value: "" }];
+  return normalizeRows(params);
 };
 
 const normalizeHeaders = (headers) => {
   if (!Array.isArray(headers) || !headers.length) {
-    return [{ key: "", value: "" }];
+    return normalizeRows([]);
   }
-  return headers.map((header) => ({
-    key: header.key ?? "",
-    value: header.value ?? "",
-  }));
+  return normalizeRows(
+    headers.map((header) => ({
+      key: header.key ?? "",
+      value: header.value ?? "",
+      description:
+        typeof header.description === "string" ? header.description : "",
+      enabled: !header.disabled,
+    })),
+  );
 };
 
 const normalizeRequestFromPostman = (request) => {
@@ -193,7 +229,7 @@ const normalizeRequestFromPostman = (request) => {
   return {
     method: (request?.method ?? "GET").toUpperCase(),
     url,
-    params,
+    params: normalizeRows(params),
     headers: normalizeHeaders(request?.header),
     body,
   };
@@ -269,7 +305,9 @@ const parseEnvironment = (data) => {
 };
 
 const buildUrlWithParams = (url, params) => {
-  const filtered = params.filter((param) => param.key);
+  const filtered = params.filter(
+    (param) => param.enabled && param.key,
+  );
   if (!filtered.length) return url;
   try {
     const parsed = new URL(url);
@@ -368,8 +406,8 @@ function App() {
     name: "Nova requisicao",
     method: "GET",
     url: "",
-    params: [{ key: "", value: "" }],
-    headers: [{ key: "", value: "" }],
+    params: [createKeyValueRow()],
+    headers: [createKeyValueRow()],
     body: "",
     scripts: { pre: "", tests: "" },
   });
@@ -382,7 +420,16 @@ function App() {
   const envValues = activeEnvironment?.values ?? {};
 
   const updateRequest = (patch) => {
-    setRequestDraft((current) => ({ ...current, ...patch }));
+    setRequestDraft((current) => {
+      const next = { ...current, ...patch };
+      if (patch.params) {
+        next.params = normalizeRows(patch.params);
+      }
+      if (patch.headers) {
+        next.headers = normalizeRows(patch.headers);
+      }
+      return next;
+    });
   };
 
   const updateKeyValue = (section, index, field, value) => {
@@ -391,24 +438,17 @@ function App() {
         if (rowIndex !== index) return row;
         return { ...row, [field]: value };
       });
-      return { ...current, [section]: next };
+      return { ...current, [section]: normalizeRows(next) };
     });
   };
 
-  const addKeyValueRow = (section) => {
-    setRequestDraft((current) => ({
-      ...current,
-      [section]: [...current[section], { key: "", value: "" }],
-    }));
-  };
-
-  const removeKeyValueRow = (section, index) => {
+  const updateRowEnabled = (section, index, enabled) => {
     setRequestDraft((current) => {
-      const next = current[section].filter((_, rowIndex) => rowIndex !== index);
-      return {
-        ...current,
-        [section]: next.length ? next : [{ key: "", value: "" }],
-      };
+      const next = current[section].map((row, rowIndex) => {
+        if (rowIndex !== index) return row;
+        return { ...row, enabled };
+      });
+      return { ...current, [section]: normalizeRows(next) };
     });
   };
 
@@ -447,8 +487,8 @@ function App() {
       name: item.name,
       method: item.request.method,
       url: item.request.url,
-      params: item.request.params,
-      headers: item.request.headers,
+      params: normalizeRows(item.request.params),
+      headers: normalizeRows(item.request.headers),
       body: item.request.body,
       scripts: item.scripts ?? { pre: "", tests: "" },
     });
@@ -524,16 +564,18 @@ function App() {
     }
 
     const resolvedEnv = preRun.envValues ?? envSnapshot;
-    const resolvedParams = requestDraft.params.map((param) => ({
-      key: resolveVariables(param.key, resolvedEnv),
-      value: resolveVariables(param.value, resolvedEnv),
-    }));
+    const resolvedParams = requestDraft.params
+      .filter((param) => param.enabled && param.key)
+      .map((param) => ({
+        key: resolveVariables(param.key, resolvedEnv),
+        value: resolveVariables(param.value, resolvedEnv),
+      }));
     const resolvedUrl = buildUrlWithParams(
       resolveVariables(requestDraft.url, resolvedEnv),
       resolvedParams,
     );
     const resolvedHeaders = requestDraft.headers
-      .filter((header) => header.key)
+      .filter((header) => header.enabled && header.key)
       .map((header) => ({
         key: resolveVariables(header.key, resolvedEnv),
         value: resolveVariables(header.value, resolvedEnv),
@@ -688,7 +730,6 @@ function App() {
         <header className="topbar">
           <div className="workspace">
             <div className="workspace-title">Workspace Local</div>
-            <div className="workspace-meta">Sem sync, sem times</div>
           </div>
           <div className="env-select">
             <span>Environment</span>
@@ -767,20 +808,50 @@ function App() {
             </div>
 
             {activeTab === "Params" ? (
-              <div className="table-grid">
+              <div className="table-grid postman-grid">
                 <div className="table-header">Query Params</div>
+                <div className="table-header-row">
+                  <span />
+                  <span>Key</span>
+                  <span>Value</span>
+                  <span>Description</span>
+                  <button type="button" className="bulk-button">
+                    Bulk Edit
+                  </button>
+                </div>
                 {requestDraft.params.map((param, index) => (
-                  <div key={`param-${index}`} className="table-row">
+                  <div
+                    key={`param-${index}`}
+                    className={`table-row postman-row ${
+                      param.enabled ? "" : "disabled"
+                    }`}
+                  >
+                    <input
+                      type="checkbox"
+                      checked={param.enabled}
+                      onChange={(event) =>
+                        updateRowEnabled(
+                          "params",
+                          index,
+                          event.target.checked,
+                        )
+                      }
+                    />
                     <input
                       value={param.key}
-                      placeholder="key"
+                      placeholder="Key"
                       onChange={(event) =>
-                        updateKeyValue("params", index, "key", event.target.value)
+                        updateKeyValue(
+                          "params",
+                          index,
+                          "key",
+                          event.target.value,
+                        )
                       }
                     />
                     <input
                       value={param.value}
-                      placeholder="value"
+                      placeholder="Value"
                       onChange={(event) =>
                         updateKeyValue(
                           "params",
@@ -790,33 +861,57 @@ function App() {
                         )
                       }
                     />
-                    <button
-                      type="button"
-                      className="row-action"
-                      onClick={() => removeKeyValueRow("params", index)}
-                    >
-                      Remover
-                    </button>
+                    <input
+                      value={param.description}
+                      placeholder="Description"
+                      onChange={(event) =>
+                        updateKeyValue(
+                          "params",
+                          index,
+                          "description",
+                          event.target.value,
+                        )
+                      }
+                    />
+                    <span className="bulk-placeholder" />
                   </div>
                 ))}
-                <button
-                  type="button"
-                  className="add-row"
-                  onClick={() => addKeyValueRow("params")}
-                >
-                  + Adicionar Param
-                </button>
               </div>
             ) : null}
 
             {activeTab === "Headers" ? (
-              <div className="table-grid">
+              <div className="table-grid postman-grid">
                 <div className="table-header">Headers</div>
+                <div className="table-header-row">
+                  <span />
+                  <span>Key</span>
+                  <span>Value</span>
+                  <span>Description</span>
+                  <button type="button" className="bulk-button">
+                    Bulk Edit
+                  </button>
+                </div>
                 {requestDraft.headers.map((header, index) => (
-                  <div key={`header-${index}`} className="table-row">
+                  <div
+                    key={`header-${index}`}
+                    className={`table-row postman-row ${
+                      header.enabled ? "" : "disabled"
+                    }`}
+                  >
+                    <input
+                      type="checkbox"
+                      checked={header.enabled}
+                      onChange={(event) =>
+                        updateRowEnabled(
+                          "headers",
+                          index,
+                          event.target.checked,
+                        )
+                      }
+                    />
                     <input
                       value={header.key}
-                      placeholder="Header"
+                      placeholder="Key"
                       onChange={(event) =>
                         updateKeyValue(
                           "headers",
@@ -828,7 +923,7 @@ function App() {
                     />
                     <input
                       value={header.value}
-                      placeholder="Valor"
+                      placeholder="Value"
                       onChange={(event) =>
                         updateKeyValue(
                           "headers",
@@ -838,22 +933,21 @@ function App() {
                         )
                       }
                     />
-                    <button
-                      type="button"
-                      className="row-action"
-                      onClick={() => removeKeyValueRow("headers", index)}
-                    >
-                      Remover
-                    </button>
+                    <input
+                      value={header.description}
+                      placeholder="Description"
+                      onChange={(event) =>
+                        updateKeyValue(
+                          "headers",
+                          index,
+                          "description",
+                          event.target.value,
+                        )
+                      }
+                    />
+                    <span className="bulk-placeholder" />
                   </div>
                 ))}
-                <button
-                  type="button"
-                  className="add-row"
-                  onClick={() => addKeyValueRow("headers")}
-                >
-                  + Adicionar Header
-                </button>
               </div>
             ) : null}
 
