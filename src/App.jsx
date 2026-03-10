@@ -474,6 +474,30 @@ function App() {
     });
   };
 
+  const updateRequestName = (name) => {
+    setRequestDraft((current) => ({ ...current, name }));
+    if (!activeRequestId) return;
+    setCollections((current) => {
+      const updateItems = (items) =>
+        items.map((item) => {
+          if (item.type === "request" && item.id === activeRequestId) {
+            return { ...item, name };
+          }
+          if (item.type === "folder") {
+            return {
+              ...item,
+              children: updateItems(item.children ?? []),
+            };
+          }
+          return item;
+        });
+      return current.map((collection) => ({
+        ...collection,
+        items: updateItems(collection.items ?? []),
+      }));
+    });
+  };
+
   const updateKeyValue = (section, index, field, value) => {
     setRequestDraft((current) => {
       const next = current[section].map((row, rowIndex) => {
@@ -892,7 +916,7 @@ function App() {
               <input
                 value={requestDraft.name}
                 onChange={(event) =>
-                  updateRequest({ name: event.target.value })
+                  updateRequestName(event.target.value)
                 }
                 placeholder="Nome da requisicao"
               />
