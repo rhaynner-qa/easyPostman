@@ -264,21 +264,30 @@ textarea {
   margin-bottom: 12px;
 }
 
-.method-select {
-  padding: 10px 12px;
-  border-radius: 10px;
-  border: 1px solid #2f2f2f;
+.request-input-group {
+  display: flex;
+  align-items: center;
+  flex: 1;
   background: #232323;
-  min-width: 100px;
+  border: 1px solid #2f2f2f;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.method-select {
+  padding: 10px 14px;
+  border: none;
+  background: transparent;
+  min-width: 96px;
   font-weight: 600;
+  border-right: 1px solid #2f2f2f;
 }
 
 .url-input {
-  flex: 1;
   padding: 10px 12px;
-  border-radius: 10px;
-  border: 1px solid #2f2f2f;
-  background: #232323;
+  border: none;
+  background: transparent;
+  flex: 1;
 }
 
 .send-button {

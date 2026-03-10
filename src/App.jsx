@@ -761,27 +761,29 @@ function App() {
             </div>
 
             <div className="request-line">
-              <select
-                className="method-select"
-                value={requestDraft.method}
-                onChange={(event) =>
-                  updateRequest({ method: event.target.value })
-                }
-              >
-                {METHOD_OPTIONS.map((method) => (
-                  <option key={method} value={method}>
-                    {method}
-                  </option>
-                ))}
-              </select>
-              <input
-                className="url-input"
-                value={requestDraft.url}
-                onChange={(event) =>
-                  updateRequest({ url: event.target.value })
-                }
-                placeholder="https://api.exemplo.com/resource"
-              />
+              <div className="request-input-group">
+                <select
+                  className="method-select"
+                  value={requestDraft.method}
+                  onChange={(event) =>
+                    updateRequest({ method: event.target.value })
+                  }
+                >
+                  {METHOD_OPTIONS.map((method) => (
+                    <option key={method} value={method}>
+                      {method}
+                    </option>
+                  ))}
+                </select>
+                <input
+                  className="url-input"
+                  value={requestDraft.url}
+                  onChange={(event) =>
+                    updateRequest({ url: event.target.value })
+                  }
+                  placeholder="https://api.exemplo.com/resource"
+                />
+              </div>
               <button
                 className="send-button"
                 type="button"
