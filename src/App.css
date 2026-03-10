@@ -78,14 +78,14 @@ textarea {
   background: #232323;
   color: #e6e6e6;
   padding: 6px 10px;
-  border-radius: 8px;
+  border-radius: 6px;
   font-size: 12px;
 }
 
 .create-button {
   width: 32px;
   height: 32px;
-  border-radius: 8px;
+  border-radius: 6px;
   border: 1px solid #2f2f2f;
   background: #232323;
   color: #e6e6e6;
@@ -202,7 +202,7 @@ textarea {
   background: #232323;
   color: #c9cdd6;
   padding: 6px 8px;
-  border-radius: 8px;
+  border-radius: 6px;
   font-size: 12px;
   cursor: pointer;
 }
@@ -231,7 +231,7 @@ textarea {
   background: #232323;
   color: #e6e6e6;
   padding: 6px 10px;
-  border-radius: 8px;
+  border-radius: 6px;
   text-align: left;
   cursor: pointer;
   font-size: 12px;
@@ -246,11 +246,26 @@ textarea {
 }
 
 .env-header {
-  grid-template-columns: 1fr 1fr 40px;
+  grid-template-columns: 1fr 1fr 36px;
 }
 
 .env-row {
-  grid-template-columns: 1fr 1fr 40px;
+  grid-template-columns: 1fr 1fr 36px;
+}
+
+.env-panel .postman-cell {
+  padding: 6px 8px;
+}
+
+.env-panel .postman-row {
+  align-items: stretch;
+}
+
+.env-panel .row-delete {
+  width: 26px;
+  height: 26px;
+  border-radius: 6px;
+  background-size: 12px 12px;
 }
 
 .item-delete {
