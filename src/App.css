@@ -81,6 +81,7 @@ textarea {
   display: flex;
   align-items: center;
   gap: 8px;
+  padding: 0 12px;
 }
 
 .sidebar-search {
@@ -91,6 +92,7 @@ textarea {
   padding: 6px 10px;
   border-radius: 6px;
   font-size: 12px;
+  height: 32px;
 }
 
 .create-button {
