@@ -424,6 +424,7 @@ function App() {
   const [environments, setEnvironments] = useState([]);
   const [activeEnvId, setActiveEnvId] = useState("");
   const [activeRequestId, setActiveRequestId] = useState("");
+  const [expandedFolders, setExpandedFolders] = useState({});
   const [activeTab, setActiveTab] = useState("Params");
   const [scriptTab, setScriptTab] = useState("Pre");
   const [response, setResponse] = useState(null);
@@ -549,6 +550,21 @@ function App() {
       const data = JSON.parse(await file.text());
       const parsed = parseCollection(data);
       setCollections((current) => [...current, parsed]);
+      setExpandedFolders((current) => {
+        const next = { ...current };
+        const markExpanded = (items) => {
+          items.forEach((item) => {
+            if (item.type === "folder") {
+              next[item.id] = true;
+              if (item.children?.length) {
+                markExpanded(item.children);
+              }
+            }
+          });
+        };
+        markExpanded(parsed.items ?? []);
+        return next;
+      });
       setImportError("");
     } catch (error) {
       setImportError("Falha ao importar collection.");
@@ -740,17 +756,35 @@ function App() {
     }
   };
 
+  const toggleFolder = (folderId) => {
+    setExpandedFolders((current) => ({
+      ...current,
+      [folderId]: !current[folderId],
+    }));
+  };
+
   const renderCollectionItems = (items, depth = 0) =>
     items.map((item) => {
       if (item.type === "folder") {
+        const isOpen = expandedFolders[item.id] ?? false;
         return (
           <div key={item.id} className="collection-folder">
-            <div className="folder-label" style={{ paddingLeft: 12 + depth * 12 }}>
-              {item.name}
-            </div>
-            <div className="folder-children">
-              {renderCollectionItems(item.children ?? [], depth + 1)}
-            </div>
+            <button
+              type="button"
+              className="folder-label"
+              style={{ paddingLeft: 12 + depth * 12 }}
+              onClick={() => toggleFolder(item.id)}
+            >
+              <span className={`folder-caret ${isOpen ? "open" : ""}`}>
+                ▶
+              </span>
+              <span>{item.name}</span>
+            </button>
+            {isOpen ? (
+              <div className="folder-children">
+                {renderCollectionItems(item.children ?? [], depth + 1)}
+              </div>
+            ) : null}
           </div>
         );
       }
