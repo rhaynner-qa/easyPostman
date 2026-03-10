@@ -847,7 +847,6 @@ function App() {
                 }
                 placeholder="Nome da requisicao"
               />
-              <span className="request-note">Sem historico remoto</span>
             </div>
 
             <div className="request-line">
