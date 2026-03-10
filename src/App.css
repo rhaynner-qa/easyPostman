@@ -163,28 +163,28 @@ textarea {
 }
 
 .method-GET {
-  background: #1b3a5d;
-  color: #7cc5ff;
-}
-
-.method-POST {
-  background: #1c3b2d;
+  background: #1f3a2a;
   color: #7ee2a8;
 }
 
+.method-POST {
+  background: #3a3212;
+  color: #f6d365;
+}
+
 .method-PUT {
-  background: #3a2b16;
-  color: #f5b26b;
+  background: #1b2a4a;
+  color: #7cb5ff;
 }
 
 .method-PATCH {
   background: #31173c;
-  color: #e4a6ff;
+  color: #d6a6ff;
 }
 
 .method-DELETE {
   background: #3b181b;
-  color: #ff9c9c;
+  color: #ff8f8f;
 }
 
 .item-name {
