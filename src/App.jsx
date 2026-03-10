@@ -953,7 +953,7 @@ function App() {
                 <div className="postman-grid">
                   <div className="table-header-row">
                     <div className="postman-cell checkbox-cell" />
-                    <div className="postman-cell">Key</div>
+                    <div className="postman-cell">Header</div>
                     <div className="postman-cell">Value</div>
                     <div className="postman-cell">Description</div>
                     <div className="postman-cell bulk-cell">
@@ -1165,7 +1165,7 @@ function App() {
                       <div className="postman-cell">
                         <input
                           value={header.key}
-                          placeholder="Key"
+                          placeholder="Header"
                           onChange={(event) =>
                             updateKeyValue(
                               "headers",
