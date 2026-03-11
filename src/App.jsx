@@ -2051,7 +2051,7 @@ function App() {
             <div className="request-line">
               <div className="request-input-group">
               <select
-                className="method-select"
+                className={`method-select method-select-${requestDraft.method}`}
                 value={requestDraft.method}
                 onChange={(event) =>
                   updateRequest({ method: event.target.value })

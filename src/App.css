@@ -639,7 +639,7 @@ textarea {
   flex: 1;
   background: #232323;
   border: 1px solid #2f2f2f;
-  border-radius: 12px;
+  border-radius: 8px;
   overflow: hidden;
 }
 
@@ -650,6 +650,27 @@ textarea {
   min-width: 96px;
   font-weight: 600;
   border-right: 1px solid #2f2f2f;
+  color: #d8d8d8;
+}
+
+.method-select-GET {
+  color: #7ee2a8;
+}
+
+.method-select-POST {
+  color: #f6d365;
+}
+
+.method-select-PUT {
+  color: #7cb5ff;
+}
+
+.method-select-PATCH {
+  color: #d6a6ff;
+}
+
+.method-select-DELETE {
+  color: #ff8f8f;
 }
 
 .url-input {
