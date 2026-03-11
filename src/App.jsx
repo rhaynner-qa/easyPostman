@@ -2111,7 +2111,7 @@ function App() {
                       <div className="postman-cell">
                         <input
                           value={param.value}
-                          placeholder="Value"
+                          placeholder="<string>"
                           onChange={(event) =>
                             updateKeyValue(
                               "params",
@@ -2268,7 +2268,7 @@ function App() {
                       <div className="postman-cell">
                         <input
                           value={header.value}
-                          placeholder="Value"
+                          placeholder="<string>"
                           onChange={(event) =>
                             updateKeyValue(
                               "headers",

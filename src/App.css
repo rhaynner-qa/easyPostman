@@ -759,21 +759,21 @@ textarea {
 }
 
 .params-header {
-  grid-template-columns: 28px var(--params-key-width) 1fr 1fr 90px;
+  grid-template-columns: 28px var(--params-key-width) 1fr 1fr 120px;
   position: relative;
 }
 
 .params-row {
-  grid-template-columns: 28px var(--params-key-width) 1fr 1fr 90px;
+  grid-template-columns: 28px var(--params-key-width) 1fr 1fr 120px;
 }
 
 .headers-header {
-  grid-template-columns: 28px var(--headers-key-width) 1fr 1fr 90px;
+  grid-template-columns: 28px var(--headers-key-width) 1fr 1fr 120px;
   position: relative;
 }
 
 .headers-row {
-  grid-template-columns: 28px var(--headers-key-width) 1fr 1fr 90px;
+  grid-template-columns: 28px var(--headers-key-width) 1fr 1fr 120px;
 }
 
 .grid-resizer {
@@ -801,59 +801,92 @@ textarea {
 }
 
 .table-header {
-  font-size: 12px;
+  font-size: 14px;
   color: #a7a7a7;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
+  text-transform: none;
+  letter-spacing: 0;
   padding: 0 4px 6px;
 }
 
 .table-header-row {
   display: grid;
-  grid-template-columns: 28px 1.2fr 1fr 1fr 90px;
+  grid-template-columns: 28px 1.2fr 1fr 1fr 120px;
   align-items: center;
   padding: 0;
-  border-bottom: 1px solid #383838;
-  background: #222222;
+  border-bottom: 1px solid #35373c;
+  background: #202225;
   color: #9aa0aa;
-  font-size: 12px;
+  font-size: 13px;
 }
 
 .bulk-button {
-  justify-self: end;
+  justify-self: start;
   border: none;
   background: transparent;
   padding: 4px 0;
   border-radius: 0;
-  font-size: 11px;
+  font-size: 12px;
   cursor: pointer;
   color: #9aa0aa;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.bulk-button::after {
+  content: "···";
+  letter-spacing: 1px;
+  font-size: 14px;
+  line-height: 1;
 }
 
 .bulk-placeholder {
-  justify-self: end;
-  width: 90px;
+  justify-self: start;
+  width: 120px;
 }
 
 .postman-row {
   display: grid;
-  grid-template-columns: 28px 1.2fr 1fr 1fr 90px;
+  grid-template-columns: 28px 1.2fr 1fr 1fr 120px;
   align-items: center;
   padding: 0;
-  border-bottom: 1px solid #383838;
+  border-bottom: 1px solid #35373c;
 }
 
 .postman-row input[type="checkbox"] {
-  width: 14px;
-  height: 14px;
+  width: 18px;
+  height: 18px;
+  appearance: none;
+  border: 1px solid #3a3d45;
+  border-radius: 6px;
+  background: transparent;
+  cursor: pointer;
+  position: relative;
+}
+
+.postman-row input[type="checkbox"]:checked {
+  background: #2f6fed;
+  border-color: #2f6fed;
+}
+
+.postman-row input[type="checkbox"]:checked::after {
+  content: "";
+  position: absolute;
+  left: 5px;
+  top: 2px;
+  width: 4px;
+  height: 8px;
+  border: solid #ffffff;
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
 }
 
 .postman-cell {
   display: flex;
   align-items: center;
-  padding: 8px 10px;
-  border-right: 1px solid #383838;
-  min-height: 34px;
+  padding: 10px 12px;
+  border-right: 1px solid #35373c;
+  min-height: 42px;
 }
 
 .postman-cell:last-child {
@@ -866,6 +899,10 @@ textarea {
 
 .bulk-cell {
   justify-content: flex-end;
+}
+
+.table-header-row .bulk-cell {
+  justify-content: flex-start;
 }
 
 .row-delete {
@@ -886,12 +923,29 @@ textarea {
   cursor: not-allowed;
 }
 
+.params-row .row-delete,
+.headers-row .row-delete {
+  opacity: 0;
+}
+
+.params-row:hover .row-delete,
+.headers-row:hover .row-delete,
+.params-row:focus-within .row-delete,
+.headers-row:focus-within .row-delete {
+  opacity: 0.75;
+}
+
 .postman-row input:not([type="checkbox"]) {
   background: transparent;
   border: none;
-  color: #e6e6e6;
+  color: #e2e5ea;
   outline: none;
   width: 100%;
+  font-size: 13px;
+}
+
+.postman-row input:not([type="checkbox"])::placeholder {
+  color: #787d86;
 }
 
 .bulk-editor {
@@ -1140,21 +1194,21 @@ textarea {
 }
 
 .table-header-row.params-header {
-  grid-template-columns: 28px var(--params-key-width) 1fr 1fr 90px;
+  grid-template-columns: 28px var(--params-key-width) 1fr 1fr 120px;
   position: relative;
 }
 
 .postman-row.params-row {
-  grid-template-columns: 28px var(--params-key-width) 1fr 1fr 90px;
+  grid-template-columns: 28px var(--params-key-width) 1fr 1fr 120px;
 }
 
 .table-header-row.headers-header {
-  grid-template-columns: 28px var(--headers-key-width) 1fr 1fr 90px;
+  grid-template-columns: 28px var(--headers-key-width) 1fr 1fr 120px;
   position: relative;
 }
 
 .postman-row.headers-row {
-  grid-template-columns: 28px var(--headers-key-width) 1fr 1fr 90px;
+  grid-template-columns: 28px var(--headers-key-width) 1fr 1fr 120px;
 }
 
 .table-header-row.env-header {
