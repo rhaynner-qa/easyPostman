@@ -219,12 +219,6 @@ const resolveVariableValue = (key, variables) => {
   return variables[matchedKey];
 };
 
-const highlightUrlVariables = (value) =>
-  escapeHtml(value).replace(
-    /(\{\{[^}]+\}\})/g,
-    '<span class="url-variable">$1</span>',
-  );
-
 const resolveVariables = (text, variables, missingKeys) => {
   if (text === null || text === undefined) return "";
   return String(text).replace(/\{\{([^}]+)\}\}/g, (_, rawKey) => {
@@ -541,7 +535,6 @@ function App() {
   const [scriptTab, setScriptTab] = useState("Pre");
   const [responseTab, setResponseTab] = useState("Body");
   const [methodMenuOpen, setMethodMenuOpen] = useState(false);
-  const [isUrlFocused, setIsUrlFocused] = useState(false);
   const [response, setResponse] = useState(null);
   const [testResults, setTestResults] = useState([]);
   const [runs, setRuns] = useState([]);
@@ -2098,16 +2091,7 @@ function App() {
                     </div>
                   ) : null}
                 </div>
-                <div className={`url-input-wrap ${isUrlFocused ? "focused" : ""}`}>
-                  <div
-                    className="url-input-highlight"
-                    aria-hidden="true"
-                    dangerouslySetInnerHTML={{
-                      __html: requestDraft.url
-                        ? highlightUrlVariables(requestDraft.url)
-                        : '<span class="url-placeholder">https://api.exemplo.com/resource</span>',
-                    }}
-                  />
+                <div className="url-input-wrap">
                   <input
                     className="url-input"
                     value={requestDraft.url}
@@ -2117,8 +2101,6 @@ function App() {
                     autoCorrect="off"
                     autoCapitalize="off"
                     spellCheck={false}
-                    onFocus={() => setIsUrlFocused(true)}
-                    onBlur={() => setIsUrlFocused(false)}
                     placeholder="https://api.exemplo.com/resource"
                   />
                 </div>

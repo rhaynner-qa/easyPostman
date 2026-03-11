@@ -730,54 +730,17 @@ textarea {
   border: none;
   background: transparent;
   width: 100%;
-  position: relative;
-  z-index: 1;
-  color: transparent;
-  caret-color: #f2f2f2;
+  color: #e6e6e6;
   font-size: 15px;
   line-height: 1.35;
 }
 
 .url-input::placeholder {
-  color: transparent;
+  color: #8d93a1;
 }
 
 .url-input-wrap {
-  position: relative;
   flex: 1;
-}
-
-.url-input-highlight {
-  position: absolute;
-  inset: 0;
-  padding: 10px 12px;
-  pointer-events: none;
-  color: #e6e6e6;
-  white-space: pre;
-  overflow: hidden;
-  font-size: 15px;
-  line-height: 1.35;
-}
-
-.url-input-wrap.focused .url-input {
-  color: #e6e6e6;
-}
-
-.url-input-wrap.focused .url-input::placeholder {
-  color: #8d93a1;
-}
-
-.url-input-wrap.focused .url-input-highlight {
-  opacity: 0;
-}
-
-.url-placeholder {
-  color: #8d93a1;
-}
-
-.url-variable {
-  color: #63a6ff;
-  font-weight: 500;
 }
 
 .send-button {
