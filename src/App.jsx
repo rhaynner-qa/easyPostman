@@ -541,6 +541,7 @@ function App() {
   const [scriptTab, setScriptTab] = useState("Pre");
   const [responseTab, setResponseTab] = useState("Body");
   const [methodMenuOpen, setMethodMenuOpen] = useState(false);
+  const [isUrlFocused, setIsUrlFocused] = useState(false);
   const [response, setResponse] = useState(null);
   const [testResults, setTestResults] = useState([]);
   const [runs, setRuns] = useState([]);
@@ -2097,7 +2098,7 @@ function App() {
                     </div>
                   ) : null}
                 </div>
-                <div className="url-input-wrap">
+                <div className={`url-input-wrap ${isUrlFocused ? "focused" : ""}`}>
                   <div
                     className="url-input-highlight"
                     aria-hidden="true"
@@ -2116,6 +2117,8 @@ function App() {
                     autoCorrect="off"
                     autoCapitalize="off"
                     spellCheck={false}
+                    onFocus={() => setIsUrlFocused(true)}
+                    onBlur={() => setIsUrlFocused(false)}
                     placeholder="https://api.exemplo.com/resource"
                   />
                 </div>

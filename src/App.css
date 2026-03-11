@@ -759,6 +759,18 @@ textarea {
   line-height: 1.35;
 }
 
+.url-input-wrap.focused .url-input {
+  color: #e6e6e6;
+}
+
+.url-input-wrap.focused .url-input::placeholder {
+  color: #8d93a1;
+}
+
+.url-input-wrap.focused .url-input-highlight {
+  opacity: 0;
+}
+
 .url-placeholder {
   color: #8d93a1;
 }
