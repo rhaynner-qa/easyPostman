@@ -1205,18 +1205,10 @@ textarea {
   opacity: 0.5;
 }
 
-.body-editor textarea,
-.scripts-panel textarea {
-  width: 100%;
-  min-height: 160px;
-  border-radius: 6px;
-  border: 1px solid #2f2f2f;
-  padding: 12px;
-  background: #1e1e1e;
-  resize: vertical;
-  font-family: "JetBrains Mono", "SFMono-Regular", monospace;
-  font-size: 12px;
-  color: #e6e6e6;
+.body-editor {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 }
 
 .body-header {

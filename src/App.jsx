@@ -2739,13 +2739,19 @@ function App() {
             {activeTab === "Body" ? (
               <div className="body-editor">
                 <div className="body-header">Raw</div>
-                <textarea
-                  value={requestDraft.body}
-                  onChange={(event) =>
-                    updateRequest({ body: event.target.value })
-                  }
-                  placeholder='{"exemplo": true}'
-                />
+                <div className="code-editor">
+                  <CodeMirror
+                    value={requestDraft.body}
+                    height="220px"
+                    theme={oneDark}
+                    extensions={[javascript()]}
+                    onChange={(value) => updateRequest({ body: value })}
+                    basicSetup={{
+                      lineNumbers: true,
+                      foldGutter: false,
+                    }}
+                  />
+                </div>
               </div>
             ) : null}
 
