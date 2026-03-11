@@ -864,31 +864,32 @@ textarea {
   height: 18px;
   -webkit-appearance: none;
   appearance: none;
-  border: 1px solid #4a4f59;
+  border: 1px solid #3b3f46;
   border-radius: 6px;
-  background: #1f2125;
-  color: #d7dbe2;
+  background: #1b1d21;
   cursor: pointer;
   position: relative;
-  display: grid;
-  place-content: center;
+  display: inline-block;
+  vertical-align: middle;
+  transition: border-color 0.15s ease, background-color 0.15s ease;
 }
 
 .postman-row input[type="checkbox"]:checked {
-  background: #2a2d33;
-  border-color: #5a6170;
+  background-color: #2f3238;
+  border-color: #4b505a;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><path fill='none' stroke='%23ffffff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' d='M3.4 8.3l2.7 2.7 6.5-6.5'/></svg>");
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 11px 11px;
 }
 
-.postman-row input[type="checkbox"]:checked::after {
-  content: "";
-  position: absolute;
-  left: 50%;
-  top: 46%;
-  width: 5px;
-  height: 9px;
-  border: solid currentColor;
-  border-width: 0 2px 2px 0;
-  transform: translate(-50%, -50%) rotate(45deg);
+.postman-row input[type="checkbox"]:hover {
+  border-color: #505662;
+}
+
+.postman-row input[type="checkbox"]:focus-visible {
+  outline: 1px solid #5e6471;
+  outline-offset: 1px;
 }
 
 .postman-cell {
