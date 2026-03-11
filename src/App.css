@@ -805,7 +805,7 @@ textarea {
   color: #a7a7a7;
   text-transform: none;
   letter-spacing: 0;
-  padding: 0 4px 6px;
+  padding: 0 4px 4px;
 }
 
 .table-header-row {
@@ -817,6 +817,12 @@ textarea {
   background: #202225;
   color: #9aa0aa;
   font-size: 13px;
+}
+
+.table-header-row .postman-cell {
+  min-height: 34px;
+  padding-top: 6px;
+  padding-bottom: 6px;
 }
 
 .bulk-button {
