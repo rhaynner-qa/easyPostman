@@ -206,11 +206,31 @@ const buildReportHtml = (runs) => {
 </html>`;
 };
 
-const resolveVariables = (text, variables) => {
-  if (!text) return "";
-  return text.replace(/\{\{([^}]+)\}\}/g, (_, key) => {
-    const value = variables?.[key.trim()];
-    return value ?? "";
+const resolveVariableValue = (key, variables) => {
+  if (!variables) return undefined;
+  if (Object.prototype.hasOwnProperty.call(variables, key)) {
+    return variables[key];
+  }
+  const keyLower = key.toLowerCase();
+  const matchedKey = Object.keys(variables).find(
+    (itemKey) => itemKey.toLowerCase() === keyLower,
+  );
+  if (!matchedKey) return undefined;
+  return variables[matchedKey];
+};
+
+const resolveVariables = (text, variables, missingKeys) => {
+  if (text === null || text === undefined) return "";
+  return String(text).replace(/\{\{([^}]+)\}\}/g, (_, rawKey) => {
+    const key = rawKey.trim();
+    const value = resolveVariableValue(key, variables);
+    if (value === undefined || value === null) {
+      if (missingKeys) {
+        missingKeys.add(key);
+      }
+      return "";
+    }
+    return String(value);
   });
 };
 
@@ -358,9 +378,7 @@ const parseEnvironment = (data) => {
 };
 
 const buildUrlWithParams = (url, params) => {
-  const filtered = params.filter(
-    (param) => param.enabled && param.key,
-  );
+  const filtered = params.filter((param) => param.key);
   if (!filtered.length) return url;
   try {
     const parsed = new URL(url);
@@ -1293,23 +1311,43 @@ function App() {
     }
 
     const resolvedEnv = preRun.envValues ?? envSnapshot;
+    const missingVariables = new Set();
     const resolvedParams = requestDraft.params
       .filter((param) => param.enabled && param.key)
       .map((param) => ({
-        key: resolveVariables(param.key, resolvedEnv),
-        value: resolveVariables(param.value, resolvedEnv),
+        key: resolveVariables(param.key, resolvedEnv, missingVariables),
+        value: resolveVariables(param.value, resolvedEnv, missingVariables),
       }));
     const resolvedUrl = buildUrlWithParams(
-      resolveVariables(requestDraft.url, resolvedEnv),
+      resolveVariables(requestDraft.url, resolvedEnv, missingVariables),
       resolvedParams,
     );
     const resolvedHeaders = requestDraft.headers
       .filter((header) => header.enabled && header.key)
       .map((header) => ({
-        key: resolveVariables(header.key, resolvedEnv),
-        value: resolveVariables(header.value, resolvedEnv),
+        key: resolveVariables(header.key, resolvedEnv, missingVariables),
+        value: resolveVariables(header.value, resolvedEnv, missingVariables),
       }));
-    const resolvedBody = resolveVariables(requestDraft.body, resolvedEnv);
+    const resolvedBody = resolveVariables(
+      requestDraft.body,
+      resolvedEnv,
+      missingVariables,
+    );
+
+    if (missingVariables.size > 0) {
+      const missingList = Array.from(missingVariables).join(", ");
+      const message = `Variavel(is) nao encontrada(s) no environment ativo: ${missingList}`;
+      setResponse({
+        status: 0,
+        status_text: "Erro",
+        headers: [],
+        body: message,
+        duration: 0,
+        size: 0,
+      });
+      setIsSending(false);
+      return;
+    }
 
     const start = performance.now();
     try {
@@ -1355,7 +1393,10 @@ function App() {
         tests,
       });
     } catch (error) {
-      const errorMessage = error?.message ?? "Falha ao enviar requisicao.";
+      const errorMessage =
+        typeof error === "string"
+          ? error
+          : error?.message || JSON.stringify(error) || "Falha ao enviar requisicao.";
       setResponse({
         status: 0,
         status_text: "Erro",
