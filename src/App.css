@@ -97,10 +97,10 @@ textarea {
 .create-button {
   width: 32px;
   height: 32px;
-  border-radius: 6px;
-  border: 1px solid #2f2f2f;
-  background: #232323;
-  color: #e6e6e6;
+  border-radius: 0;
+  border: none;
+  background: transparent;
+  color: #c9cdd6;
   font-size: 18px;
   cursor: pointer;
   line-height: 1;
@@ -123,11 +123,11 @@ textarea {
 
 .create-dropdown button,
 .dropdown-item {
-  border: 1px solid transparent;
-  background: #232323;
-  color: #e6e6e6;
-  padding: 6px 10px;
-  border-radius: 8px;
+  border: none;
+  background: transparent;
+  color: #c9cdd6;
+  padding: 6px 8px;
+  border-radius: 0;
   text-align: left;
   cursor: pointer;
   font-size: 12px;
@@ -135,8 +135,7 @@ textarea {
 
 .create-dropdown button:hover,
 .dropdown-item:hover {
-  border-color: #2f2f2f;
-  background: #2a2a2a;
+  color: #f2f2f2;
 }
 
 .import-error {
@@ -164,8 +163,8 @@ textarea {
 .collection-caret {
   width: 18px;
   height: 18px;
-  border: 1px solid transparent;
-  border-radius: 5px;
+  border: none;
+  border-radius: 0;
   background: transparent;
   color: #909090;
   display: inline-flex;
@@ -177,7 +176,6 @@ textarea {
 }
 
 .collection-caret:hover {
-  border-color: #2f2f2f;
   color: #d2d2d2;
 }
 
@@ -252,19 +250,18 @@ textarea {
 
 .sidebar-tabs button {
   flex: 1;
-  border: 1px solid #2f2f2f;
-  background: #232323;
-  color: #c9cdd6;
-  padding: 6px 8px;
-  border-radius: 6px;
+  border: none;
+  background: transparent;
+  color: #9aa0aa;
+  padding: 4px 2px 8px;
+  border-radius: 0;
   font-size: 12px;
   cursor: pointer;
 }
 
 .sidebar-tabs button.active {
-  background: #2f6fed;
-  border-color: #2f6fed;
-  color: #fff;
+  color: #e6e6e6;
+  border-bottom: 2px solid #2f6fed;
 }
 
 .env-panel {
@@ -281,18 +278,20 @@ textarea {
 }
 
 .env-item {
-  border: 1px solid #2f2f2f;
-  background: #232323;
-  color: #e6e6e6;
-  padding: 6px 10px;
-  border-radius: 6px;
+  border: none;
+  background: transparent;
+  color: #aab0ba;
+  padding: 4px 4px;
+  border-radius: 0;
   text-align: left;
   cursor: pointer;
   font-size: 12px;
 }
 
 .env-item.active {
-  background: #2a2a2a;
+  color: #e6e6e6;
+  text-decoration: underline;
+  text-underline-offset: 3px;
 }
 
 .env-editor .postman-grid {
@@ -346,9 +345,9 @@ textarea {
 .item-delete {
   width: 22px;
   height: 22px;
-  border-radius: 6px;
-  border: 1px solid #2f2f2f;
-  background-color: #232323;
+  border-radius: 0;
+  border: none;
+  background-color: transparent;
   background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23aeb4bf' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><polyline points='3 6 5 6 21 6'/><path d='M8 6V4h8v2'/><path d='M19 6l-1 14H6L5 6'/><line x1='10' y1='11' x2='10' y2='17'/><line x1='14' y1='11' x2='14' y2='17'/></svg>");
   background-repeat: no-repeat;
   background-position: center;
@@ -358,8 +357,7 @@ textarea {
 }
 
 .item-delete:hover {
-  border-color: #3a3a3a;
-  background-color: #2a2a2a;
+  opacity: 0.8;
 }
 
 .collection-item:hover {
@@ -462,22 +460,22 @@ textarea {
 
 .modal-cancel,
 .modal-confirm {
-  padding: 6px 12px;
-  border-radius: 8px;
+  padding: 4px 0;
+  border-radius: 0;
   font-size: 12px;
   cursor: pointer;
 }
 
 .modal-cancel {
-  border: 1px solid #2f2f2f;
-  background: #232323;
-  color: #e6e6e6;
+  border: none;
+  background: transparent;
+  color: #c9cdd6;
 }
 
 .modal-confirm {
   border: none;
-  background: #d92d20;
-  color: #fff;
+  background: transparent;
+  color: #ff8f8f;
 }
 
 .method-pill {
@@ -599,11 +597,11 @@ textarea {
 }
 
 .save-button {
-  border: 1px solid #2f2f2f;
-  background: #232323;
-  color: #e6e6e6;
-  padding: 6px 12px;
-  border-radius: 8px;
+  border: none;
+  background: transparent;
+  color: #8fb5ff;
+  padding: 4px 0;
+  border-radius: 0;
   font-size: 12px;
   cursor: pointer;
 }
@@ -684,18 +682,19 @@ textarea {
 }
 
 .tab-button {
-  border: 1px solid #2f2f2f;
-  background: #232323;
-  padding: 6px 12px;
-  border-radius: 999px;
+  border: none;
+  background: transparent;
+  color: #9aa0aa;
+  padding: 4px 0;
+  border-radius: 0;
   font-size: 12px;
   cursor: pointer;
 }
 
 .tab-button.active {
-  background: #2f6fed;
-  color: #fff;
-  border-color: #2f6fed;
+  background: transparent;
+  color: #e6e6e6;
+  border-bottom: 2px solid #2f6fed;
 }
 
 .table-grid {
@@ -782,13 +781,13 @@ textarea {
 
 .bulk-button {
   justify-self: end;
-  border: 1px solid #2f2f2f;
-  background: #1e1e1e;
-  padding: 4px 8px;
-  border-radius: 6px;
+  border: none;
+  background: transparent;
+  padding: 4px 0;
+  border-radius: 0;
   font-size: 11px;
   cursor: pointer;
-  color: #b4b9c2;
+  color: #9aa0aa;
 }
 
 .bulk-placeholder {
@@ -832,9 +831,9 @@ textarea {
 .row-delete {
   width: 28px;
   height: 28px;
-  border-radius: 6px;
-  border: 1px solid #2f2f2f;
-  background-color: #232323;
+  border-radius: 0;
+  border: none;
+  background-color: transparent;
   background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23aeb4bf' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><polyline points='3 6 5 6 21 6'/><path d='M8 6V4h8v2'/><path d='M19 6l-1 14H6L5 6'/><line x1='10' y1='11' x2='10' y2='17'/><line x1='14' y1='11' x2='14' y2='17'/></svg>");
   background-repeat: no-repeat;
   background-position: center;
@@ -884,20 +883,20 @@ textarea {
 
 .bulk-apply {
   border: none;
-  background: #2f6fed;
-  color: #fff;
-  padding: 6px 12px;
-  border-radius: 8px;
+  background: transparent;
+  color: #8fb5ff;
+  padding: 4px 0;
+  border-radius: 0;
   cursor: pointer;
   font-size: 12px;
 }
 
 .bulk-cancel {
-  border: 1px solid #2f2f2f;
-  background: #232323;
-  color: #e6e6e6;
-  padding: 6px 12px;
-  border-radius: 8px;
+  border: none;
+  background: transparent;
+  color: #c9cdd6;
+  padding: 4px 0;
+  border-radius: 0;
   cursor: pointer;
   font-size: 12px;
 }
@@ -960,18 +959,18 @@ textarea {
 }
 
 .script-tabs button {
-  border: 1px solid #2f2f2f;
-  background: #232323;
-  padding: 6px 10px;
-  border-radius: 999px;
+  border: none;
+  background: transparent;
+  color: #9aa0aa;
+  padding: 4px 0;
+  border-radius: 0;
   font-size: 12px;
   cursor: pointer;
 }
 
 .script-tabs button.active {
-  background: #2f6fed;
-  color: #fff;
-  border-color: #2f6fed;
+  color: #e6e6e6;
+  border-bottom: 2px solid #2f6fed;
 }
 
 .response-panel {
@@ -1027,10 +1026,11 @@ textarea {
 }
 
 .report-button {
-  border: 1px solid #2f2f2f;
-  background: #232323;
-  padding: 6px 10px;
-  border-radius: 999px;
+  border: none;
+  background: transparent;
+  color: #8fb5ff;
+  padding: 4px 0;
+  border-radius: 0;
   font-size: 12px;
   cursor: pointer;
 }
