@@ -1225,9 +1225,11 @@ textarea {
 
 .code-editor {
   border-radius: 6px;
-  overflow: hidden;
+  overflow: auto;
   border: 1px solid #2f2f2f;
   background: #1b1b1b;
+  max-height: 42vh;
+  scrollbar-gutter: stable;
 }
 
 .code-editor .cm-editor {
@@ -1239,6 +1241,9 @@ textarea {
 
 .code-editor .cm-scroller {
   font-family: inherit;
+  overflow: auto !important;
+  max-height: 42vh;
+  scrollbar-gutter: stable;
 }
 
 .script-tabs {
@@ -1370,6 +1375,7 @@ textarea {
   max-height: 42vh;
   overflow-y: auto;
   overflow-x: auto;
+  scrollbar-gutter: stable;
   border: 1px solid #2a2a2a;
 }
 
