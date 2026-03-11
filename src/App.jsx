@@ -2268,7 +2268,7 @@ function App() {
                     className={scriptTab === "Tests" ? "active" : ""}
                     onClick={() => setScriptTab("Tests")}
                   >
-                    Tests (pm.*)
+                    Pos-request script
                   </button>
                 </div>
                 {scriptTab === "Pre" ? (
