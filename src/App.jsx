@@ -60,6 +60,24 @@ const createEmptyDraft = () => ({
   scripts: { pre: "", tests: "" },
 });
 
+const createRequestTab = (overrides = {}) => ({
+  id: createId(),
+  title: "Nova requisicao",
+  activeRequestId: "",
+  activeCollectionId: "",
+  activeFolderId: "",
+  draftParentId: "",
+  draftCollectionId: "",
+  requestDraft: createEmptyDraft(),
+  isDirty: false,
+  activeTab: "Params",
+  scriptTab: "Pre",
+  responseTab: "Body",
+  response: null,
+  testResults: [],
+  ...overrides,
+});
+
 const buildBulkText = (rows) =>
   rows
     .filter((row) => row.key)
@@ -620,6 +638,11 @@ function App() {
   const paramsGridRef = useRef(null);
   const headersGridRef = useRef(null);
   const methodMenuRef = useRef(null);
+  const initialRequestTabId = useRef(createId()).current;
+  const [activeRequestTabId, setActiveRequestTabId] = useState(initialRequestTabId);
+  const [requestTabs, setRequestTabs] = useState(() => [
+    createRequestTab({ id: initialRequestTabId }),
+  ]);
 
   useEffect(() => {
     const envStored = Number(localStorage.getItem("envKeyWidth"));
@@ -697,6 +720,101 @@ function App() {
   const [importError, setImportError] = useState("");
 
   const [requestDraft, setRequestDraft] = useState(createEmptyDraft());
+
+  const buildTabStateFromCurrent = () => ({
+    title: requestDraft.name?.trim() || "Nova requisicao",
+    activeRequestId,
+    activeCollectionId,
+    activeFolderId,
+    draftParentId,
+    draftCollectionId,
+    requestDraft,
+    isDirty,
+    activeTab,
+    scriptTab,
+    responseTab,
+    response,
+    testResults,
+  });
+
+  const applyTabState = (tab) => {
+    if (!tab) return;
+    setActiveRequestId(tab.activeRequestId || "");
+    setActiveCollectionId(tab.activeCollectionId || "");
+    setActiveFolderId(tab.activeFolderId || "");
+    setDraftParentId(tab.draftParentId || "");
+    setDraftCollectionId(tab.draftCollectionId || "");
+    setRequestDraft(tab.requestDraft ?? createEmptyDraft());
+    setIsDirty(Boolean(tab.isDirty));
+    setActiveTab(tab.activeTab || "Params");
+    setScriptTab(tab.scriptTab || "Pre");
+    setResponseTab(tab.responseTab || "Body");
+    setResponse(tab.response ?? null);
+    setTestResults(tab.testResults ?? []);
+  };
+
+  const openRequestTab = (tabId) => {
+    if (!tabId || tabId === activeRequestTabId) return;
+    const targetTab = requestTabs.find((tab) => tab.id === tabId);
+    if (!targetTab) return;
+    setActiveRequestTabId(tabId);
+    applyTabState(targetTab);
+  };
+
+  const closeRequestTab = (tabId) => {
+    const tab = requestTabs.find((item) => item.id === tabId);
+    if (!tab || requestTabs.length === 1) return;
+    if (tab.isDirty && !window.confirm("Fechar aba com alteracoes pendentes?")) {
+      return;
+    }
+    const closingIndex = requestTabs.findIndex((item) => item.id === tabId);
+    const nextTabId =
+      tabId === activeRequestTabId
+        ? requestTabs[closingIndex + 1]?.id ?? requestTabs[closingIndex - 1]?.id
+        : activeRequestTabId;
+    setRequestTabs((current) => current.filter((item) => item.id !== tabId));
+    if (nextTabId) {
+      setActiveRequestTabId(nextTabId);
+      const target = requestTabs.find((item) => item.id === nextTabId);
+      applyTabState(target);
+    }
+  };
+
+  useEffect(() => {
+    setRequestTabs((current) =>
+      current.map((tab) =>
+        tab.id === activeRequestTabId
+          ? { ...tab, ...buildTabStateFromCurrent() }
+          : tab,
+      ),
+    );
+  }, [
+    activeRequestTabId,
+    activeRequestId,
+    activeCollectionId,
+    activeFolderId,
+    draftParentId,
+    draftCollectionId,
+    requestDraft,
+    isDirty,
+    activeTab,
+    scriptTab,
+    responseTab,
+    response,
+    testResults,
+  ]);
+
+  useEffect(() => {
+    const activeTabState = requestTabs.find((tab) => tab.id === activeRequestTabId);
+    if (activeTabState) {
+      applyTabState(activeTabState);
+      return;
+    }
+    if (requestTabs[0]) {
+      setActiveRequestTabId(requestTabs[0].id);
+      applyTabState(requestTabs[0]);
+    }
+  }, [activeRequestTabId, requestTabs]);
 
   const activeEnvironment = useMemo(
     () => environments.find((env) => env.id === activeEnvId),
@@ -927,13 +1045,17 @@ function App() {
   };
 
   const createNewRequest = () => {
-    setActiveRequestId("");
-    setRequestDraft(createEmptyDraft());
-    setIsDirty(false);
-    setDraftParentId(activeFolderId || "");
-    setDraftCollectionId(activeFolderId ? "" : activeCollectionId || "");
-    setResponse(null);
-    setTestResults([]);
+    const newTab = createRequestTab({
+      activeCollectionId: activeCollectionId || "",
+      activeFolderId: activeFolderId || "",
+      draftParentId: activeFolderId || "",
+      draftCollectionId: activeFolderId ? "" : activeCollectionId || "",
+      requestDraft: createEmptyDraft(),
+      title: "Nova requisicao",
+    });
+    setRequestTabs((current) => [...current, newTab]);
+    setActiveRequestTabId(newTab.id);
+    applyTabState(newTab);
   };
 
   const createCollection = () => {
@@ -1348,8 +1470,30 @@ function App() {
       })),
     );
     if (activeRequestId === requestId) {
-      createNewRequest();
+      const nextDraft = createEmptyDraft();
+      setActiveRequestId("");
+      setRequestDraft(nextDraft);
+      setIsDirty(false);
+      setDraftParentId("");
+      setDraftCollectionId("");
+      setResponse(null);
+      setTestResults([]);
     }
+    setRequestTabs((current) =>
+      current.map((tab) =>
+        tab.activeRequestId === requestId
+          ? {
+              ...tab,
+              activeRequestId: "",
+              requestDraft: createEmptyDraft(),
+              isDirty: false,
+              response: null,
+              testResults: [],
+              title: "Nova requisicao",
+            }
+          : tab,
+      ),
+    );
     cancelDeleteRequest();
   };
 
@@ -2094,6 +2238,56 @@ function App() {
         </header>
 
         <div className="content">
+          <div className="request-session-tabs">
+            {requestTabs.map((tab) => (
+              <div
+                key={tab.id}
+                className={`request-session-tab ${
+                  tab.id === activeRequestTabId ? "active" : ""
+                }`}
+              >
+                <button
+                  type="button"
+                  className="request-session-open"
+                  onClick={() => openRequestTab(tab.id)}
+                >
+                  <span className={`method-pill method-${tab.requestDraft.method}`}>
+                    {tab.requestDraft.method}
+                  </span>
+                  <span className="request-session-name">{tab.title}</span>
+                  {tab.isDirty ? (
+                    <span
+                      className="request-session-dirty"
+                      aria-label="Alteracoes pendentes"
+                    >
+                      •
+                    </span>
+                  ) : null}
+                </button>
+                {requestTabs.length > 1 ? (
+                  <button
+                    type="button"
+                    className="request-session-close"
+                    onClick={(event) => {
+                      event.stopPropagation();
+                      closeRequestTab(tab.id);
+                    }}
+                    aria-label="Fechar aba"
+                  >
+                    x
+                  </button>
+                ) : null}
+              </div>
+            ))}
+            <button
+              type="button"
+              className="request-session-add"
+              onClick={createNewRequest}
+              aria-label="Nova aba"
+            >
+              +
+            </button>
+          </div>
           <div className="request-panel">
             <div className="request-title">
               <input

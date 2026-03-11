@@ -570,6 +570,84 @@ textarea {
   overflow: auto;
 }
 
+.request-session-tabs {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  overflow-x: auto;
+  padding-bottom: 2px;
+}
+
+.request-session-tab {
+  display: flex;
+  align-items: center;
+  min-width: 180px;
+  max-width: 320px;
+  border: 1px solid #2f2f2f;
+  border-radius: 7px;
+  background: #1f1f1f;
+}
+
+.request-session-tab.active {
+  border-color: #3a6fd8;
+  background: #22252b;
+}
+
+.request-session-open {
+  border: none;
+  background: transparent;
+  color: inherit;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 8px;
+  min-width: 0;
+  flex: 1;
+  cursor: pointer;
+}
+
+.request-session-name {
+  font-size: 12px;
+  color: #d9dde6;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.request-session-dirty {
+  color: #f6d365;
+  font-size: 16px;
+  line-height: 1;
+}
+
+.request-session-close {
+  border: none;
+  background: transparent;
+  color: #8f95a1;
+  width: 22px;
+  height: 22px;
+  cursor: pointer;
+  flex: 0 0 auto;
+}
+
+.request-session-close:hover {
+  color: #d2d6de;
+}
+
+.request-session-add {
+  border: none;
+  background: transparent;
+  color: #9aa0aa;
+  font-size: 18px;
+  line-height: 1;
+  cursor: pointer;
+  padding: 2px 6px;
+}
+
+.request-session-add:hover {
+  color: #e6e6e6;
+}
+
 .request-panel,
 .response-panel {
   background: #202020;
