@@ -2554,12 +2554,6 @@ function App() {
                 >
                   Gerar Report
                 </button>
-                {response ? (
-                  <>
-                    <span>{response.duration} ms</span>
-                    <span>{response.size} bytes</span>
-                  </>
-                ) : null}
               </div>
             </div>
             <div className="tab-row response-tabs">
@@ -2595,6 +2589,10 @@ function App() {
                 <strong>
                   {response.status} {response.status_text}
                 </strong>
+                <span className="status-divider" />
+                <span>{response.duration} ms</span>
+                <span className="status-divider" />
+                <span>{response.size} bytes</span>
               </div>
             ) : null}
             {responseTab === "Body" ? (

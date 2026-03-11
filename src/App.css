@@ -1224,6 +1224,12 @@ textarea {
   font-weight: 700;
 }
 
+.response-status-line .status-divider {
+  width: 1px;
+  height: 12px;
+  background: #3a3d44;
+}
+
 .response-status-line.positive strong {
   color: #6cd99a;
 }
