@@ -809,18 +809,6 @@ function App() {
     testResults,
   ]);
 
-  useEffect(() => {
-    const activeTabState = requestTabs.find((tab) => tab.id === activeRequestTabId);
-    if (activeTabState) {
-      applyTabState(activeTabState);
-      return;
-    }
-    if (requestTabs[0]) {
-      setActiveRequestTabId(requestTabs[0].id);
-      applyTabState(requestTabs[0]);
-    }
-  }, [activeRequestTabId, requestTabs]);
-
   const activeEnvironment = useMemo(
     () => environments.find((env) => env.id === activeEnvId),
     [environments, activeEnvId],
