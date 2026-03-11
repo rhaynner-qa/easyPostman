@@ -473,6 +473,7 @@ function App() {
   const [draftCollectionId, setDraftCollectionId] = useState("");
   const [activeTab, setActiveTab] = useState("Params");
   const [scriptTab, setScriptTab] = useState("Pre");
+  const [responseTab, setResponseTab] = useState("Body");
   const [response, setResponse] = useState(null);
   const [testResults, setTestResults] = useState([]);
   const [runs, setRuns] = useState([]);
@@ -1294,6 +1295,7 @@ function App() {
 
   const handleSend = async () => {
     setIsSending(true);
+    setResponseTab("Body");
     setResponse(null);
     setTestResults([]);
 
@@ -2339,53 +2341,80 @@ function App() {
                 )}
               </div>
             </div>
-            <div className="response-body">
-              {response ? (
-                <pre>
-                  {(() => {
-                    try {
-                      const parsed = JSON.parse(response.body || "{}");
-                      return JSON.stringify(parsed, null, 2);
-                    } catch {
-                      return response.body || "";
-                    }
-                  })()}
-                </pre>
-              ) : (
-                <div className="empty-hint">
-                  Envie uma requisicao para visualizar a resposta.
-                </div>
-              )}
+            <div className="tab-row response-tabs">
+              <button
+                type="button"
+                className={`tab-button ${responseTab === "Body" ? "active" : ""}`}
+                onClick={() => setResponseTab("Body")}
+              >
+                Body
+              </button>
+              <button
+                type="button"
+                className={`tab-button ${responseTab === "Headers" ? "active" : ""}`}
+                onClick={() => setResponseTab("Headers")}
+              >
+                Headers
+              </button>
+              <button
+                type="button"
+                className={`tab-button ${responseTab === "Tests" ? "active" : ""}`}
+                onClick={() => setResponseTab("Tests")}
+              >
+                Tests
+              </button>
             </div>
-            <div className="response-headers">
-              <div className="table-header">Headers da resposta</div>
-              {response?.headers?.length ? (
-                response.headers.map((header, index) => (
-                  <div key={`resp-${index}`} className="table-row compact">
-                    <span>{header.key}</span>
-                    <span>{header.value}</span>
+            {responseTab === "Body" ? (
+              <div className="response-body">
+                {response ? (
+                  <pre>
+                    {(() => {
+                      try {
+                        const parsed = JSON.parse(response.body || "{}");
+                        return JSON.stringify(parsed, null, 2);
+                      } catch {
+                        return response.body || "";
+                      }
+                    })()}
+                  </pre>
+                ) : (
+                  <div className="empty-hint">
+                    Envie uma requisicao para visualizar a resposta.
                   </div>
-                ))
-              ) : (
-                <div className="empty-hint">Sem headers</div>
-              )}
-            </div>
-            <div className="tests-panel">
-              <div className="table-header">Tests</div>
-              {testResults.length ? (
-                testResults.map((test, index) => (
-                  <div key={`test-${index}`} className="test-row">
-                    <span className={test.status}>{test.status}</span>
-                    <span>{test.name}</span>
-                    {test.error ? (
-                      <span className="test-error">{test.error}</span>
-                    ) : null}
-                  </div>
-                ))
-              ) : (
-                <div className="empty-hint">Sem testes executados</div>
-              )}
-            </div>
+                )}
+              </div>
+            ) : null}
+            {responseTab === "Headers" ? (
+              <div className="response-body response-table">
+                {response?.headers?.length ? (
+                  response.headers.map((header, index) => (
+                    <div key={`resp-${index}`} className="table-row compact">
+                      <span>{header.key}</span>
+                      <span>{header.value}</span>
+                    </div>
+                  ))
+                ) : (
+                  <div className="empty-hint">Sem headers na resposta.</div>
+                )}
+              </div>
+            ) : null}
+            {responseTab === "Tests" ? (
+              <div className="response-body response-tests">
+                {testResults.length ? (
+                  testResults.map((test, index) => (
+                    <div key={`test-${index}`} className="test-row">
+                      <span className={test.status}>{test.status}</span>
+                      <span>{test.name}</span>
+                      {test.error ? (
+                        <span className="test-error">{test.error}</span>
+                      ) : null}
+                    </div>
+                  ))
+                ) : (
+                  <div className="empty-hint">Sem testes executados.</div>
+                )}
+              </div>
+            ) : null}
           </div>
         </div>
       </section>

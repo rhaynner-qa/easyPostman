@@ -980,6 +980,10 @@ textarea {
   gap: 12px;
 }
 
+.response-tabs {
+  margin-bottom: 0;
+}
+
 .response-header {
   display: flex;
   justify-content: space-between;
@@ -1031,8 +1035,8 @@ textarea {
   color: #e6e6e6;
 }
 
-.response-headers,
-.tests-panel {
+.response-table,
+.response-tests {
   display: flex;
   flex-direction: column;
   gap: 6px;
