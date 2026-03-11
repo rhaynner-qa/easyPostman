@@ -1458,6 +1458,12 @@ textarea {
   grid-template-columns: 44px var(--params-key-width) 1fr var(--params-description-width) 120px;
 }
 
+.postman-row.params-row .postman-cell {
+  min-height: 34px;
+  padding-top: 6px;
+  padding-bottom: 6px;
+}
+
 .table-header-row.headers-header {
   grid-template-columns: 44px var(--headers-key-width) 1fr var(--headers-description-width) 120px;
   position: relative;
