@@ -811,11 +811,11 @@ textarea {
   z-index: 2;
 }
 
-.params-header .grid-resizer {
+.params-key-resizer {
   left: calc(44px + var(--params-key-width));
 }
 
-.headers-header .grid-resizer {
+.headers-key-resizer {
   left: calc(44px + var(--headers-key-width));
 }
 
@@ -823,11 +823,11 @@ textarea {
   left: calc(100% - 120px);
 }
 
-.params-description-resizer {
+.params-header .params-description-resizer {
   left: calc(100% - (120px + var(--params-description-width)));
 }
 
-.headers-description-resizer {
+.headers-header .headers-description-resizer {
   left: calc(100% - (120px + var(--headers-description-width)));
 }
 

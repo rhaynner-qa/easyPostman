@@ -2137,7 +2137,7 @@ function App() {
                       </button>
                     </div>
                     <div
-                      className="grid-resizer"
+                      className="grid-resizer key-resizer params-key-resizer"
                       onMouseDown={startParamsResize}
                     />
                     <div
@@ -2301,7 +2301,7 @@ function App() {
                       </button>
                     </div>
                     <div
-                      className="grid-resizer"
+                      className="grid-resizer key-resizer headers-key-resizer"
                       onMouseDown={startHeadersResize}
                     />
                     <div
