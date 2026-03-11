@@ -982,6 +982,28 @@ textarea {
 
 .response-tabs {
   margin-bottom: 0;
+  gap: 16px;
+  border-bottom: 1px solid #2a2a2a;
+  padding-bottom: 6px;
+}
+
+.response-tabs .tab-button {
+  border: none;
+  background: transparent;
+  padding: 4px 0;
+  border-radius: 0;
+  color: #9aa0aa;
+}
+
+.response-tabs .tab-button:hover {
+  color: #c8cdd6;
+}
+
+.response-tabs .tab-button.active {
+  background: transparent;
+  border-color: transparent;
+  color: #e6e6e6;
+  border-bottom: 2px solid #2f6fed;
 }
 
 .response-header {
