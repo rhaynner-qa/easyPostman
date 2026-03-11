@@ -1718,6 +1718,12 @@ function App() {
       );
     });
 
+  const getResponseStatusClass = (status) => {
+    if (status >= 200 && status < 400) return "positive";
+    if (status >= 400 || status === 0) return "negative";
+    return "neutral";
+  };
+
   const filteredCollections = useMemo(() => {
     const term = searchTerm.trim().toLowerCase();
     if (!term) return collections;
@@ -2550,7 +2556,6 @@ function App() {
                 </button>
                 {response ? (
                   <>
-                    <span>Status {response.status}</span>
                     <span>{response.duration} ms</span>
                     <span>{response.size} bytes</span>
                   </>
@@ -2582,6 +2587,18 @@ function App() {
                 Tests
               </button>
             </div>
+            {response ? (
+              <div
+                className={`response-status-line ${getResponseStatusClass(
+                  response.status,
+                )}`}
+              >
+                <span>Status</span>
+                <strong>
+                  {response.status} {response.status_text}
+                </strong>
+              </div>
+            ) : null}
             {responseTab === "Body" ? (
               <div className="response-body">
                 {response ? (

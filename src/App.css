@@ -1209,12 +1209,42 @@ textarea {
   cursor: not-allowed;
 }
 
+.response-status-line {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+}
+
+.response-status-line span {
+  color: #9aa0aa;
+}
+
+.response-status-line strong {
+  font-weight: 700;
+}
+
+.response-status-line.positive strong {
+  color: #6cd99a;
+}
+
+.response-status-line.negative strong {
+  color: #ff8f8f;
+}
+
+.response-status-line.neutral strong {
+  color: #c9cdd6;
+}
+
 .response-body {
   background: #1b1b1b;
   border-radius: 6px;
   padding: 12px;
   min-height: 160px;
-  overflow: auto;
+  height: 320px;
+  max-height: 42vh;
+  overflow-y: auto;
+  overflow-x: auto;
   border: 1px solid #2a2a2a;
 }
 
