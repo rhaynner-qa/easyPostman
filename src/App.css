@@ -856,29 +856,33 @@ textarea {
 .postman-row input[type="checkbox"] {
   width: 18px;
   height: 18px;
+  -webkit-appearance: none;
   appearance: none;
-  border: 1px solid #3a3d45;
+  border: 1px solid #4a4f59;
   border-radius: 6px;
-  background: transparent;
+  background: #1f2125;
+  color: #d7dbe2;
   cursor: pointer;
   position: relative;
+  display: grid;
+  place-content: center;
 }
 
 .postman-row input[type="checkbox"]:checked {
-  background: #2f6fed;
-  border-color: #2f6fed;
+  background: #2a2d33;
+  border-color: #5a6170;
 }
 
 .postman-row input[type="checkbox"]:checked::after {
   content: "";
   position: absolute;
-  left: 5px;
-  top: 2px;
-  width: 4px;
-  height: 8px;
-  border: solid #ffffff;
+  left: 50%;
+  top: 46%;
+  width: 5px;
+  height: 9px;
+  border: solid currentColor;
   border-width: 0 2px 2px 0;
-  transform: rotate(45deg);
+  transform: translate(-50%, -50%) rotate(45deg);
 }
 
 .postman-cell {
