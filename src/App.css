@@ -681,6 +681,10 @@ textarea {
   flex-wrap: wrap;
 }
 
+.request-tabs {
+  gap: 10px;
+}
+
 .tab-button {
   border: none;
   background: transparent;

@@ -1911,7 +1911,7 @@ function App() {
               </button>
             </div>
 
-            <div className="tab-row">
+            <div className="tab-row request-tabs">
               {["Params", "Headers", "Body", "Scripts"].map((tab) => (
                 <button
                   key={tab}
