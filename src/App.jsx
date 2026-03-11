@@ -422,7 +422,11 @@ const parseParamsFromUrl = (rawUrl) => {
   return ensureAtLeastOneRow(normalizeRows(rows));
 };
 
+const hasUsableQueryRows = (rows) =>
+  rows.some((row) => row.enabled && String(row.key ?? "").trim());
+
 const mergeUrlWithParams = (rawUrl, rows) => {
+  const source = String(rawUrl ?? "");
   const { base, hash } = splitUrlParts(rawUrl);
   const query = rows
     .filter((row) => row.enabled && row.key)
@@ -430,6 +434,9 @@ const mergeUrlWithParams = (rawUrl, rows) => {
     .join("&");
 
   if (!query) {
+    if (!base && source) {
+      return source;
+    }
     return `${base}${hash}`;
   }
 
@@ -655,7 +662,13 @@ function App() {
       next.params = parseParamsFromUrl(next.url);
     }
     if (hasParams && !hasUrl) {
-      next.url = mergeUrlWithParams(current.url, next.params);
+      const hadQueryBefore = hasUsableQueryRows(current.params ?? []);
+      const hasQueryNow = hasUsableQueryRows(next.params ?? []);
+      if (!hadQueryBefore && !hasQueryNow) {
+        next.url = current.url;
+      } else {
+        next.url = mergeUrlWithParams(current.url, next.params);
+      }
     }
 
     return next;
