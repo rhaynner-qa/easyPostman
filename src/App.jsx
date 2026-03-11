@@ -1352,10 +1352,12 @@ function App() {
     const start = performance.now();
     try {
       const result = await invoke("send_request", {
-        method: requestDraft.method,
-        url: resolvedUrl,
-        headers: resolvedHeaders,
-        body: resolvedBody,
+        payload: {
+          method: requestDraft.method,
+          url: resolvedUrl,
+          headers: resolvedHeaders,
+          body: resolvedBody,
+        },
       });
       const duration = Math.round(performance.now() - start);
       const bodySize = result.body?.length ?? 0;
