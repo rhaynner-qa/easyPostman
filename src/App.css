@@ -586,6 +586,7 @@ textarea {
   border: 1px solid #2f2f2f;
   border-radius: 7px;
   background: #1f1f1f;
+  overflow: hidden;
 }
 
 .request-session-tab.active {
@@ -604,9 +605,14 @@ textarea {
   min-width: 0;
   flex: 1;
   cursor: pointer;
+  overflow: hidden;
+  white-space: nowrap;
 }
 
 .request-session-name {
+  display: block;
+  flex: 1;
+  min-width: 0;
   font-size: 12px;
   color: #d9dde6;
   white-space: nowrap;
@@ -666,6 +672,7 @@ textarea {
   justify-content: space-between;
   gap: 12px;
   margin-bottom: 12px;
+  min-width: 0;
 }
 
 .request-actions {
@@ -696,6 +703,10 @@ textarea {
   background: transparent;
   outline: none;
   flex: 1;
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
   color: #f2f2f2;
 }
 

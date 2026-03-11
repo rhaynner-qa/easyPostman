@@ -78,6 +78,11 @@ const createRequestTab = (overrides = {}) => ({
   ...overrides,
 });
 
+const normalizeTitle = (value) => {
+  const text = String(value ?? "").replace(/\s+/g, " ").trim();
+  return text || "Nova requisicao";
+};
+
 const buildBulkText = (rows) =>
   rows
     .filter((row) => row.key)
@@ -722,7 +727,7 @@ function App() {
   const [requestDraft, setRequestDraft] = useState(createEmptyDraft());
 
   const buildTabStateFromCurrent = () => ({
-    title: requestDraft.name?.trim() || "Nova requisicao",
+    title: normalizeTitle(requestDraft.name),
     activeRequestId,
     activeCollectionId,
     activeFolderId,
@@ -859,7 +864,10 @@ function App() {
   };
 
   const updateRequestName = (name) => {
-    setRequestDraft((current) => ({ ...current, name }));
+    setRequestDraft((current) => ({
+      ...current,
+      name: String(name ?? "").replace(/\r?\n/g, " "),
+    }));
     setIsDirty(true);
   };
 
@@ -1042,7 +1050,7 @@ function App() {
     });
 
     const newTab = createRequestTab({
-      title: item.name,
+      title: normalizeTitle(item.name),
       activeRequestId: item.id,
       activeCollectionId: collectionId || "",
       activeFolderId: folderId || "",
