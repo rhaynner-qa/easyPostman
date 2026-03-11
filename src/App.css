@@ -568,6 +568,7 @@ textarea {
   gap: 16px;
   padding: 22px 18px 16px;
   overflow: auto;
+  isolation: isolate;
 }
 
 .request-session-tabs {
@@ -575,7 +576,11 @@ textarea {
   align-items: center;
   gap: 6px;
   overflow-x: auto;
+  flex: 0 0 auto;
+  min-height: 36px;
   padding-bottom: 2px;
+  position: relative;
+  z-index: 3;
 }
 
 .request-session-tab {
@@ -660,10 +665,13 @@ textarea {
   border-radius: 8px;
   border: 1px solid #2b2b2b;
   padding: 16px;
+  position: relative;
+  z-index: 1;
+  flex: 0 0 auto;
 }
 
 .request-panel {
-  margin-top: 4px;
+  margin-top: 0;
 }
 
 .request-title {
