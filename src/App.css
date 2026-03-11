@@ -755,25 +755,27 @@ textarea {
 .headers-grid {
   position: relative;
   --params-key-width: 220px;
+  --params-description-width: 260px;
   --headers-key-width: 220px;
+  --headers-description-width: 260px;
 }
 
 .params-header {
-  grid-template-columns: 44px var(--params-key-width) 1fr 1fr 120px;
+  grid-template-columns: 44px var(--params-key-width) 1fr var(--params-description-width) 120px;
   position: relative;
 }
 
 .params-row {
-  grid-template-columns: 44px var(--params-key-width) 1fr 1fr 120px;
+  grid-template-columns: 44px var(--params-key-width) 1fr var(--params-description-width) 120px;
 }
 
 .headers-header {
-  grid-template-columns: 44px var(--headers-key-width) 1fr 1fr 120px;
+  grid-template-columns: 44px var(--headers-key-width) 1fr var(--headers-description-width) 120px;
   position: relative;
 }
 
 .headers-row {
-  grid-template-columns: 44px var(--headers-key-width) 1fr 1fr 120px;
+  grid-template-columns: 44px var(--headers-key-width) 1fr var(--headers-description-width) 120px;
 }
 
 .grid-resizer {
@@ -794,6 +796,18 @@ textarea {
 
 .headers-header .grid-resizer {
   left: calc(44px + var(--headers-key-width));
+}
+
+.description-resizer {
+  left: calc(100% - 120px);
+}
+
+.params-description-resizer {
+  left: calc(100% - (120px + var(--params-description-width)));
+}
+
+.headers-description-resizer {
+  left: calc(100% - (120px + var(--headers-description-width)));
 }
 
 .grid-resizer:hover {
@@ -1207,21 +1221,21 @@ textarea {
 }
 
 .table-header-row.params-header {
-  grid-template-columns: 44px var(--params-key-width) 1fr 1fr 120px;
+  grid-template-columns: 44px var(--params-key-width) 1fr var(--params-description-width) 120px;
   position: relative;
 }
 
 .postman-row.params-row {
-  grid-template-columns: 44px var(--params-key-width) 1fr 1fr 120px;
+  grid-template-columns: 44px var(--params-key-width) 1fr var(--params-description-width) 120px;
 }
 
 .table-header-row.headers-header {
-  grid-template-columns: 44px var(--headers-key-width) 1fr 1fr 120px;
+  grid-template-columns: 44px var(--headers-key-width) 1fr var(--headers-description-width) 120px;
   position: relative;
 }
 
 .postman-row.headers-row {
-  grid-template-columns: 44px var(--headers-key-width) 1fr 1fr 120px;
+  grid-template-columns: 44px var(--headers-key-width) 1fr var(--headers-description-width) 120px;
 }
 
 .table-header-row.env-header {

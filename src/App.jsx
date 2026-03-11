@@ -558,7 +558,9 @@ function App() {
   });
   const [envKeyWidth, setEnvKeyWidth] = useState(180);
   const [paramsKeyWidth, setParamsKeyWidth] = useState(220);
+  const [paramsDescriptionWidth, setParamsDescriptionWidth] = useState(260);
   const [headersKeyWidth, setHeadersKeyWidth] = useState(220);
+  const [headersDescriptionWidth, setHeadersDescriptionWidth] = useState(260);
   const envGridRef = useRef(null);
   const paramsGridRef = useRef(null);
   const headersGridRef = useRef(null);
@@ -572,9 +574,21 @@ function App() {
     if (paramsStored && !Number.isNaN(paramsStored)) {
       setParamsKeyWidth(paramsStored);
     }
+    const paramsDescriptionStored = Number(
+      localStorage.getItem("paramsDescriptionWidth"),
+    );
+    if (paramsDescriptionStored && !Number.isNaN(paramsDescriptionStored)) {
+      setParamsDescriptionWidth(paramsDescriptionStored);
+    }
     const headersStored = Number(localStorage.getItem("headersKeyWidth"));
     if (headersStored && !Number.isNaN(headersStored)) {
       setHeadersKeyWidth(headersStored);
+    }
+    const headersDescriptionStored = Number(
+      localStorage.getItem("headersDescriptionWidth"),
+    );
+    if (headersDescriptionStored && !Number.isNaN(headersDescriptionStored)) {
+      setHeadersDescriptionWidth(headersDescriptionStored);
     }
     const sidebarStored = Number(localStorage.getItem("sidebarWidth"));
     if (sidebarStored && !Number.isNaN(sidebarStored)) {
@@ -591,8 +605,22 @@ function App() {
   }, [paramsKeyWidth]);
 
   useEffect(() => {
+    localStorage.setItem(
+      "paramsDescriptionWidth",
+      String(paramsDescriptionWidth),
+    );
+  }, [paramsDescriptionWidth]);
+
+  useEffect(() => {
     localStorage.setItem("headersKeyWidth", String(headersKeyWidth));
   }, [headersKeyWidth]);
+
+  useEffect(() => {
+    localStorage.setItem(
+      "headersDescriptionWidth",
+      String(headersDescriptionWidth),
+    );
+  }, [headersDescriptionWidth]);
 
   useEffect(() => {
     localStorage.setItem("sidebarWidth", String(sidebarWidth));
@@ -1094,13 +1122,41 @@ function App() {
     const rect = grid.getBoundingClientRect();
     const startX = event.clientX;
     const startWidth = paramsKeyWidth;
+    const fixedColumns = 44 + paramsDescriptionWidth + 120;
+    const minValueWidth = 140;
     const min = 140;
-    const max = Math.max(220, rect.width - 90 - 120);
+    const max = Math.max(220, rect.width - fixedColumns - minValueWidth);
 
     const handleMove = (moveEvent) => {
       const delta = moveEvent.clientX - startX;
       const next = Math.min(max, Math.max(min, startWidth + delta));
       setParamsKeyWidth(next);
+    };
+
+    const handleUp = () => {
+      window.removeEventListener("mousemove", handleMove);
+      window.removeEventListener("mouseup", handleUp);
+    };
+
+    window.addEventListener("mousemove", handleMove);
+    window.addEventListener("mouseup", handleUp);
+  };
+
+  const startParamsDescriptionResize = (event) => {
+    event.preventDefault();
+    const grid = paramsGridRef.current;
+    if (!grid) return;
+    const rect = grid.getBoundingClientRect();
+    const min = 140;
+    const minValueWidth = 140;
+    const max = Math.max(
+      220,
+      rect.width - 44 - paramsKeyWidth - minValueWidth - 120,
+    );
+
+    const handleMove = (moveEvent) => {
+      const next = rect.right - moveEvent.clientX - 120;
+      setParamsDescriptionWidth(Math.min(max, Math.max(min, next)));
     };
 
     const handleUp = () => {
@@ -1119,13 +1175,41 @@ function App() {
     const rect = grid.getBoundingClientRect();
     const startX = event.clientX;
     const startWidth = headersKeyWidth;
+    const fixedColumns = 44 + headersDescriptionWidth + 120;
+    const minValueWidth = 140;
     const min = 140;
-    const max = Math.max(220, rect.width - 90 - 120);
+    const max = Math.max(220, rect.width - fixedColumns - minValueWidth);
 
     const handleMove = (moveEvent) => {
       const delta = moveEvent.clientX - startX;
       const next = Math.min(max, Math.max(min, startWidth + delta));
       setHeadersKeyWidth(next);
+    };
+
+    const handleUp = () => {
+      window.removeEventListener("mousemove", handleMove);
+      window.removeEventListener("mouseup", handleUp);
+    };
+
+    window.addEventListener("mousemove", handleMove);
+    window.addEventListener("mouseup", handleUp);
+  };
+
+  const startHeadersDescriptionResize = (event) => {
+    event.preventDefault();
+    const grid = headersGridRef.current;
+    if (!grid) return;
+    const rect = grid.getBoundingClientRect();
+    const min = 140;
+    const minValueWidth = 140;
+    const max = Math.max(
+      220,
+      rect.width - 44 - headersKeyWidth - minValueWidth - 120,
+    );
+
+    const handleMove = (moveEvent) => {
+      const next = rect.right - moveEvent.clientX - 120;
+      setHeadersDescriptionWidth(Math.min(max, Math.max(min, next)));
     };
 
     const handleUp = () => {
@@ -2020,7 +2104,10 @@ function App() {
                 <div
                   className="postman-grid params-grid"
                   ref={paramsGridRef}
-                  style={{ "--params-key-width": `${paramsKeyWidth}px` }}
+                  style={{
+                    "--params-key-width": `${paramsKeyWidth}px`,
+                    "--params-description-width": `${paramsDescriptionWidth}px`,
+                  }}
                 >
                   <div className="table-header-row params-header">
                     <div className="postman-cell checkbox-cell" />
@@ -2039,6 +2126,10 @@ function App() {
                     <div
                       className="grid-resizer"
                       onMouseDown={startParamsResize}
+                    />
+                    <div
+                      className="grid-resizer description-resizer params-description-resizer"
+                      onMouseDown={startParamsDescriptionResize}
                     />
                   </div>
                   {bulkEdit.params.open ? (
@@ -2177,7 +2268,10 @@ function App() {
                 <div
                   className="postman-grid headers-grid"
                   ref={headersGridRef}
-                  style={{ "--headers-key-width": `${headersKeyWidth}px` }}
+                  style={{
+                    "--headers-key-width": `${headersKeyWidth}px`,
+                    "--headers-description-width": `${headersDescriptionWidth}px`,
+                  }}
                 >
                   <div className="table-header-row headers-header">
                     <div className="postman-cell checkbox-cell" />
@@ -2196,6 +2290,10 @@ function App() {
                     <div
                       className="grid-resizer"
                       onMouseDown={startHeadersResize}
+                    />
+                    <div
+                      className="grid-resizer description-resizer headers-description-resizer"
+                      onMouseDown={startHeadersDescriptionResize}
                     />
                   </div>
                   {bulkEdit.headers.open ? (
