@@ -2559,9 +2559,7 @@ function App() {
                     <span>{response.duration} ms</span>
                     <span>{response.size} bytes</span>
                   </>
-                ) : (
-                  <span>Nenhuma resposta ainda</span>
-                )}
+                ) : null}
               </div>
             </div>
             <div className="tab-row response-tabs">
