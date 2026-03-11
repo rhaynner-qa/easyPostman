@@ -540,6 +540,7 @@ function App() {
   const [activeTab, setActiveTab] = useState("Params");
   const [scriptTab, setScriptTab] = useState("Pre");
   const [responseTab, setResponseTab] = useState("Body");
+  const [methodMenuOpen, setMethodMenuOpen] = useState(false);
   const [response, setResponse] = useState(null);
   const [testResults, setTestResults] = useState([]);
   const [runs, setRuns] = useState([]);
@@ -571,6 +572,7 @@ function App() {
   const envGridRef = useRef(null);
   const paramsGridRef = useRef(null);
   const headersGridRef = useRef(null);
+  const methodMenuRef = useRef(null);
 
   useEffect(() => {
     const envStored = Number(localStorage.getItem("envKeyWidth"));
@@ -632,6 +634,18 @@ function App() {
   useEffect(() => {
     localStorage.setItem("sidebarWidth", String(sidebarWidth));
   }, [sidebarWidth]);
+
+  useEffect(() => {
+    const handleOutsideClick = (event) => {
+      if (!methodMenuRef.current?.contains(event.target)) {
+        setMethodMenuOpen(false);
+      }
+    };
+    window.addEventListener("mousedown", handleOutsideClick);
+    return () => {
+      window.removeEventListener("mousedown", handleOutsideClick);
+    };
+  }, []);
   const [isSending, setIsSending] = useState(false);
   const [importError, setImportError] = useState("");
 
@@ -2050,19 +2064,39 @@ function App() {
 
             <div className="request-line">
               <div className="request-input-group">
-              <select
-                className={`method-select method-select-${requestDraft.method}`}
-                value={requestDraft.method}
-                onChange={(event) =>
-                  updateRequest({ method: event.target.value })
-                }
-              >
-                  {METHOD_OPTIONS.map((method) => (
-                    <option key={method} value={method}>
-                      {method}
-                    </option>
-                  ))}
-                </select>
+                <div className="method-select-wrap" ref={methodMenuRef}>
+                  <button
+                    type="button"
+                    className={`method-select method-select-${requestDraft.method}`}
+                    onClick={() => setMethodMenuOpen((open) => !open)}
+                  >
+                    <span>{requestDraft.method}</span>
+                    <span
+                      className={`method-select-caret ${methodMenuOpen ? "open" : ""}`}
+                    >
+                      ▾
+                    </span>
+                  </button>
+                  {methodMenuOpen ? (
+                    <div className="method-dropdown">
+                      {METHOD_OPTIONS.map((method) => (
+                        <button
+                          key={method}
+                          type="button"
+                          className={`method-option method-select-${method} ${
+                            requestDraft.method === method ? "active" : ""
+                          }`}
+                          onClick={() => {
+                            updateRequest({ method });
+                            setMethodMenuOpen(false);
+                          }}
+                        >
+                          {method}
+                        </button>
+                      ))}
+                    </div>
+                  ) : null}
+                </div>
                 <div className="url-input-wrap">
                   <div
                     className="url-input-highlight"
