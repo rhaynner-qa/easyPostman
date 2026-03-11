@@ -219,6 +219,12 @@ const resolveVariableValue = (key, variables) => {
   return variables[matchedKey];
 };
 
+const highlightUrlVariables = (value) =>
+  escapeHtml(value).replace(
+    /(\{\{[^}]+\}\})/g,
+    '<span class="url-variable">$1</span>',
+  );
+
 const resolveVariables = (text, variables, missingKeys) => {
   if (text === null || text === undefined) return "";
   return String(text).replace(/\{\{([^}]+)\}\}/g, (_, rawKey) => {
@@ -1892,14 +1898,28 @@ function App() {
                     </option>
                   ))}
                 </select>
-                <input
-                  className="url-input"
-                  value={requestDraft.url}
-                  onChange={(event) =>
-                    updateRequest({ url: event.target.value })
-                  }
-                  placeholder="https://api.exemplo.com/resource"
-                />
+                <div className="url-input-wrap">
+                  <div
+                    className="url-input-highlight"
+                    aria-hidden="true"
+                    dangerouslySetInnerHTML={{
+                      __html: requestDraft.url
+                        ? highlightUrlVariables(requestDraft.url)
+                        : '<span class="url-placeholder">https://api.exemplo.com/resource</span>',
+                    }}
+                  />
+                  <input
+                    className="url-input"
+                    value={requestDraft.url}
+                    onChange={(event) =>
+                      updateRequest({ url: event.target.value })
+                    }
+                    autoCorrect="off"
+                    autoCapitalize="off"
+                    spellCheck={false}
+                    placeholder="https://api.exemplo.com/resource"
+                  />
+                </div>
               </div>
               <button
                 className="send-button"
