@@ -98,6 +98,52 @@ const escapeHtml = (value) =>
     .replaceAll('"', "&quot;")
     .replaceAll("'", "&#039;");
 
+const highlightJsonText = (jsonText) =>
+  escapeHtml(jsonText).replace(
+    /("(?:\\u[\da-fA-F]{4}|\\[^u]|[^\\"])*"(?:\s*:)?|\btrue\b|\bfalse\b|\bnull\b|-?\d+(?:\.\d+)?(?:[eE][+-]?\d+)?)/g,
+    (token) => {
+      if (token.startsWith('"') && token.endsWith(":")) {
+        return `<span class="resp-json-key">${token}</span>`;
+      }
+      if (token.startsWith('"')) {
+        return `<span class="resp-json-string">${token}</span>`;
+      }
+      if (token === "true" || token === "false") {
+        return `<span class="resp-json-bool">${token}</span>`;
+      }
+      if (token === "null") {
+        return `<span class="resp-json-null">${token}</span>`;
+      }
+      return `<span class="resp-json-number">${token}</span>`;
+    },
+  );
+
+const highlightHtmlText = (htmlText) =>
+  escapeHtml(htmlText).replace(
+    /(&lt;\/?[^&]*?&gt;)/g,
+    '<span class="resp-html-tag">$1</span>',
+  );
+
+const buildResponsePreview = (rawBody) => {
+  const text = rawBody || "";
+  try {
+    const parsed = JSON.parse(text || "{}");
+    const formatted = JSON.stringify(parsed, null, 2);
+    return {
+      html: highlightJsonText(formatted),
+    };
+  } catch {
+    if (String(text).trim().startsWith("<")) {
+      return {
+        html: highlightHtmlText(text),
+      };
+    }
+    return {
+      html: escapeHtml(text),
+    };
+  }
+};
+
 const highlightUrlVariables = (value) =>
   escapeHtml(value).replace(
     /(\{\{[^}]+\}\})/g,
@@ -2616,16 +2662,13 @@ function App() {
             {responseTab === "Body" ? (
               <div className="response-body">
                 {response ? (
-                  <pre>
-                    {(() => {
-                      try {
-                        const parsed = JSON.parse(response.body || "{}");
-                        return JSON.stringify(parsed, null, 2);
-                      } catch {
-                        return response.body || "";
-                      }
-                    })()}
-                  </pre>
+                  <div
+                    className="response-code"
+                    aria-label="Resposta somente leitura"
+                    dangerouslySetInnerHTML={{
+                      __html: buildResponsePreview(response.body).html,
+                    }}
+                  />
                 ) : (
                   <div className="empty-hint">
                     Envie uma requisicao para visualizar a resposta.

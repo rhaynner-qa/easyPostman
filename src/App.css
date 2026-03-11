@@ -1292,12 +1292,38 @@ textarea {
   border: 1px solid #2a2a2a;
 }
 
-.response-body pre {
+.response-code {
   margin: 0;
   font-family: "JetBrains Mono", "SFMono-Regular", monospace;
   font-size: 12px;
   white-space: pre-wrap;
+  word-break: break-word;
   color: #e6e6e6;
+  user-select: text;
+}
+
+.resp-json-key {
+  color: #9cdcfe;
+}
+
+.resp-json-string {
+  color: #ce9178;
+}
+
+.resp-json-number {
+  color: #b5cea8;
+}
+
+.resp-json-bool {
+  color: #569cd6;
+}
+
+.resp-json-null {
+  color: #c586c0;
+}
+
+.resp-html-tag {
+  color: #4fc1ff;
 }
 
 .response-table,
