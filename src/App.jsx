@@ -1025,10 +1025,13 @@ function App() {
   };
 
   const selectRequest = (item, collectionId = "", folderId = "") => {
-    setActiveRequestId(item.id);
-    setActiveCollectionId(collectionId);
-    setActiveFolderId(folderId);
-    updateRequest({
+    const existingTab = requestTabs.find((tab) => tab.activeRequestId === item.id);
+    if (existingTab) {
+      openRequestTab(existingTab.id);
+      return;
+    }
+
+    const requestDraftNext = mergeDraftPatch(createEmptyDraft(), {
       name: item.name,
       method: item.request.method,
       url: item.request.url,
@@ -1037,11 +1040,26 @@ function App() {
       body: item.request.body,
       scripts: item.scripts ?? { pre: "", tests: "" },
     });
-    setIsDirty(false);
-    setDraftParentId("");
-    setDraftCollectionId("");
-    setResponse(null);
-    setTestResults([]);
+
+    const newTab = createRequestTab({
+      title: item.name,
+      activeRequestId: item.id,
+      activeCollectionId: collectionId || "",
+      activeFolderId: folderId || "",
+      draftParentId: "",
+      draftCollectionId: "",
+      requestDraft: requestDraftNext,
+      isDirty: false,
+      response: null,
+      testResults: [],
+      activeTab: "Params",
+      scriptTab: "Pre",
+      responseTab: "Body",
+    });
+
+    setRequestTabs((current) => [...current, newTab]);
+    setActiveRequestTabId(newTab.id);
+    applyTabState(newTab);
   };
 
   const createNewRequest = () => {
