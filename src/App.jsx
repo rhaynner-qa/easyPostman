@@ -383,6 +383,59 @@ const parseEnvironment = (data) => {
   };
 };
 
+const splitUrlParts = (rawUrl) => {
+  const value = String(rawUrl ?? "");
+  const hashIndex = value.indexOf("#");
+  const baseWithQuery = hashIndex >= 0 ? value.slice(0, hashIndex) : value;
+  const hash = hashIndex >= 0 ? value.slice(hashIndex) : "";
+  const queryIndex = baseWithQuery.indexOf("?");
+  if (queryIndex < 0) {
+    return { base: baseWithQuery, query: "", hash };
+  }
+  return {
+    base: baseWithQuery.slice(0, queryIndex),
+    query: baseWithQuery.slice(queryIndex + 1),
+    hash,
+  };
+};
+
+const parseParamsFromUrl = (rawUrl) => {
+  const { query } = splitUrlParts(rawUrl);
+  if (!query) {
+    return [createKeyValueRow()];
+  }
+
+  const rows = query
+    .split("&")
+    .filter((chunk) => chunk.length > 0)
+    .map((chunk) => {
+      const separator = chunk.indexOf("=");
+      if (separator < 0) {
+        return createKeyValueRow({ key: chunk, value: "" });
+      }
+      return createKeyValueRow({
+        key: chunk.slice(0, separator),
+        value: chunk.slice(separator + 1),
+      });
+    });
+
+  return ensureAtLeastOneRow(normalizeRows(rows));
+};
+
+const mergeUrlWithParams = (rawUrl, rows) => {
+  const { base, hash } = splitUrlParts(rawUrl);
+  const query = rows
+    .filter((row) => row.enabled && row.key)
+    .map((row) => `${row.key}=${row.value ?? ""}`)
+    .join("&");
+
+  if (!query) {
+    return `${base}${hash}`;
+  }
+
+  return `${base}?${query}${hash}`;
+};
+
 const buildUrlWithParams = (url, params) => {
   const filtered = params.filter((param) => param.key);
   if (!filtered.length) return url;
@@ -556,17 +609,32 @@ function App() {
 
   const envValues = activeEnvironment?.values ?? {};
 
+  const mergeDraftPatch = (current, patch) => {
+    const hasUrl = Object.prototype.hasOwnProperty.call(patch, "url");
+    const hasParams = Object.prototype.hasOwnProperty.call(patch, "params");
+    const hasHeaders = Object.prototype.hasOwnProperty.call(patch, "headers");
+
+    const next = { ...current, ...patch };
+
+    if (hasParams) {
+      next.params = ensureAtLeastOneRow(normalizeRows(patch.params));
+    }
+    if (hasHeaders) {
+      next.headers = ensureAtLeastOneRow(normalizeRows(patch.headers));
+    }
+
+    if (hasUrl && !hasParams) {
+      next.params = parseParamsFromUrl(next.url);
+    }
+    if (hasParams && !hasUrl) {
+      next.url = mergeUrlWithParams(current.url, next.params);
+    }
+
+    return next;
+  };
+
   const updateRequest = (patch) => {
-    setRequestDraft((current) => {
-      const next = { ...current, ...patch };
-      if (patch.params) {
-        next.params = ensureAtLeastOneRow(normalizeRows(patch.params));
-      }
-      if (patch.headers) {
-        next.headers = ensureAtLeastOneRow(normalizeRows(patch.headers));
-      }
-      return next;
-    });
+    setRequestDraft((current) => mergeDraftPatch(current, patch));
     setIsDirty(true);
   };
 
@@ -581,7 +649,7 @@ function App() {
         if (rowIndex !== index) return row;
         return { ...row, [field]: value };
       });
-      return { ...current, [section]: normalizeRows(next) };
+      return mergeDraftPatch(current, { [section]: normalizeRows(next) });
     });
     setIsDirty(true);
   };
@@ -592,7 +660,7 @@ function App() {
         if (rowIndex !== index) return row;
         return { ...row, enabled };
       });
-      return { ...current, [section]: normalizeRows(next) };
+      return mergeDraftPatch(current, { [section]: normalizeRows(next) });
     });
     setIsDirty(true);
   };
@@ -601,7 +669,7 @@ function App() {
     setRequestDraft((current) => {
       const rows = current[section].filter((_, rowIndex) => rowIndex !== index);
       const nextRows = ensureAtLeastOneRow(normalizeRows(rows));
-      return { ...current, [section]: nextRows };
+      return mergeDraftPatch(current, { [section]: nextRows });
     });
     setIsDirty(true);
   };
@@ -622,7 +690,7 @@ function App() {
       const rows = current[section];
       if (index >= rows.length - 1) {
         const nextRows = normalizeRows([...rows, createKeyValueRow()]);
-        return { ...current, [section]: nextRows };
+        return mergeDraftPatch(current, { [section]: nextRows });
       }
       return current;
     });
@@ -655,7 +723,7 @@ function App() {
 
   const applyBulkEdit = (section) => {
     const rows = parseBulkText(bulkEdit[section].text);
-    setRequestDraft((current) => ({ ...current, [section]: rows }));
+    setRequestDraft((current) => mergeDraftPatch(current, { [section]: rows }));
     setBulkEdit((current) => ({
       ...current,
       [section]: { open: false, text: "" },
