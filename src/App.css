@@ -759,21 +759,21 @@ textarea {
 }
 
 .params-header {
-  grid-template-columns: 28px var(--params-key-width) 1fr 1fr 120px;
+  grid-template-columns: 44px var(--params-key-width) 1fr 1fr 120px;
   position: relative;
 }
 
 .params-row {
-  grid-template-columns: 28px var(--params-key-width) 1fr 1fr 120px;
+  grid-template-columns: 44px var(--params-key-width) 1fr 1fr 120px;
 }
 
 .headers-header {
-  grid-template-columns: 28px var(--headers-key-width) 1fr 1fr 120px;
+  grid-template-columns: 44px var(--headers-key-width) 1fr 1fr 120px;
   position: relative;
 }
 
 .headers-row {
-  grid-template-columns: 28px var(--headers-key-width) 1fr 1fr 120px;
+  grid-template-columns: 44px var(--headers-key-width) 1fr 1fr 120px;
 }
 
 .grid-resizer {
@@ -789,11 +789,11 @@ textarea {
 }
 
 .params-header .grid-resizer {
-  left: calc(28px + var(--params-key-width));
+  left: calc(44px + var(--params-key-width));
 }
 
 .headers-header .grid-resizer {
-  left: calc(28px + var(--headers-key-width));
+  left: calc(44px + var(--headers-key-width));
 }
 
 .grid-resizer:hover {
@@ -810,7 +810,7 @@ textarea {
 
 .table-header-row {
   display: grid;
-  grid-template-columns: 28px 1.2fr 1fr 1fr 120px;
+  grid-template-columns: 44px 1.2fr 1fr 1fr 120px;
   align-items: center;
   padding: 0;
   border-bottom: 1px solid #35373c;
@@ -853,7 +853,7 @@ textarea {
 
 .postman-row {
   display: grid;
-  grid-template-columns: 28px 1.2fr 1fr 1fr 120px;
+  grid-template-columns: 44px 1.2fr 1fr 1fr 120px;
   align-items: center;
   padding: 0;
   border-bottom: 1px solid #35373c;
@@ -906,6 +906,8 @@ textarea {
 
 .checkbox-cell {
   justify-content: center;
+  padding-left: 0;
+  padding-right: 0;
 }
 
 .bulk-cell {
@@ -1205,21 +1207,21 @@ textarea {
 }
 
 .table-header-row.params-header {
-  grid-template-columns: 28px var(--params-key-width) 1fr 1fr 120px;
+  grid-template-columns: 44px var(--params-key-width) 1fr 1fr 120px;
   position: relative;
 }
 
 .postman-row.params-row {
-  grid-template-columns: 28px var(--params-key-width) 1fr 1fr 120px;
+  grid-template-columns: 44px var(--params-key-width) 1fr 1fr 120px;
 }
 
 .table-header-row.headers-header {
-  grid-template-columns: 28px var(--headers-key-width) 1fr 1fr 120px;
+  grid-template-columns: 44px var(--headers-key-width) 1fr 1fr 120px;
   position: relative;
 }
 
 .postman-row.headers-row {
-  grid-template-columns: 28px var(--headers-key-width) 1fr 1fr 120px;
+  grid-template-columns: 44px var(--headers-key-width) 1fr 1fr 120px;
 }
 
 .table-header-row.env-header {
